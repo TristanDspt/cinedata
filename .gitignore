@@ -1,3 +1,4 @@
 .env
+.vscode/
 notebooks/
 __pycache__/
