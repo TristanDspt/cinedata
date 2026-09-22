@@ -106,6 +106,7 @@ def build_movie_dict():
     for movie in popular_movies:
         details = get_movie_details(movie["id"])
         casting, directors = get_casting(movie["id"])
+
         result = {
             "id": movie.get("id"),
             "title": movie.get("title"),
@@ -118,9 +119,11 @@ def build_movie_dict():
             "revenue": details.get("revenue"),
             "genre_ids": movie.get("genre_ids"),
             "genres": [genre["name"] for genre in details.get("genres")],
+            "synopsis": movie.get("overview"),
             "vote_average_tmdb": movie.get("vote_average"),
-            "synopsis": movie.get("overview")
+            "vote_count_tmdb": movie.get("vote_count"),
         }
+        
         movies.append(result)
         
     return movies

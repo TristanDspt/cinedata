@@ -1,7 +1,9 @@
 # config.yaml
+
 api_tmdb:
   base_url: "https://api.themoviedb.org/3"
   timeout: 5
+  language: "en-EN"
 
 database:
   host: "localhost"
