@@ -10,6 +10,7 @@ API_KEY = os.getenv("TMDB_API_KEY")
 
 assert API_KEY, "Missing key : check .env file"
 
+
 def safe_get(url, retries=3):
     if retries == 0:
         print("Too much tentatives, try again later")
@@ -33,11 +34,13 @@ def safe_get(url, retries=3):
         print(f"Unknown error : {err}")
     return None
 
+
 def get_headers():
     return {
         "accept": "application/json",
         "Authorization": f"Bearer {API_KEY}"
     }
+
 
 def get_popular_movie(limit=5):
     url = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
@@ -52,6 +55,7 @@ def get_popular_movie(limit=5):
 
     return popular_movies
 
+
 # url = "https://api.themoviedb.org/3/movie/movie_id?language=en-US"
 def get_movie_details(movie_id):
     url = f"https://api.themoviedb.org/3/movie/{movie_id}?language=en-US"
@@ -64,6 +68,7 @@ def get_movie_details(movie_id):
         return None
 
     return movie_details
+
 
 # url = "https://api.themoviedb.org/3/movie/movie_id/credits?language=en-US"
 def get_casting(movie_id):
@@ -79,6 +84,7 @@ def get_casting(movie_id):
 
     return casting
 
+
 def get_genre_table():
     url = f"https://api.themoviedb.org/3/genre/movie/list"
 
@@ -88,3 +94,31 @@ def get_genre_table():
         genre_list = response.json()
 
     return genre_list
+
+
+def build_movie_dict():
+    popular_movies = get_popular_movie()
+
+    movies = []
+
+    for movie in popular_movies:
+        details = get_movie_details(movie["id"])
+        casting, directors = get_casting(movie["id"])
+        result = {
+            "id": movie.get("id"),
+            "title": movie.get("title"),
+            "tagline": details.get("tagline"),
+            "director": [director["name"] for director in directors],
+            "casting": [actor["name"] for actor in casting],
+            "release": movie.get("release_date"),
+            "duration": details.get("runtime"),
+            "budget" : details.get("budget"),
+            "revenue": details.get("revenue"),
+            "genre_ids": movie.get("genre_ids"),
+            "genres": [genre["name"] for genre in details.get("genres")],
+            "vote_average_tmdb": movie.get("vote_average"),
+            "synopsis": movie.get("overview")
+        }
+        movies.append(result)
+        
+    return movies
