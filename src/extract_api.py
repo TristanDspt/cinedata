@@ -1,12 +1,19 @@
 import os
 from dotenv import load_dotenv
+import pandas as pd
 import requests
+import time
 
 load_dotenv()
 
-TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+API_KEY = os.getenv("TMDB_API_KEY")
 
-def safe_get(url):
+assert API_KEY, "Missing key : check .env file"
+
+def safe_get(url, retries=3):
+    if retries == 0:
+        print("Too much tentatives, try again later")
+        return None
     try:
         response = requests.get(url, headers=get_headers(), timeout=5)
         response.raise_for_status()
@@ -16,7 +23,12 @@ def safe_get(url):
     except requests.exceptions.Timeout:
         print("Timeout.")
     except requests.exceptions.HTTPError as err:
-        print(f"HTTP error : {err}")
+        if err.response.status_code == 429:
+            time_sleep = int(err.response.headers["Retry-After"]) + 1
+            time.sleep(time_sleep)
+            return safe_get(url, retries - 1)
+        else:
+            print(f"HTTP error : {err}")
     except requests.exceptions.RequestException as err:
         print(f"Unknown error : {err}")
     return None
@@ -24,17 +36,17 @@ def safe_get(url):
 def get_headers():
     return {
         "accept": "application/json",
-        "Authorization": f"Bearer {TMDB_API_KEY}"
+        "Authorization": f"Bearer {API_KEY}"
     }
 
-def get_popular_movie():
+def get_popular_movie(limit=5):
     url = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
     
     response = safe_get(url)
 
     if response is not None:
         data = response.json()
-        popular_movies = data["results"]
+        popular_movies = data["results"][:limit]
     else:
         return None
 
@@ -54,7 +66,7 @@ def get_movie_details(movie_id):
     return movie_details
 
 # url = "https://api.themoviedb.org/3/movie/movie_id/credits?language=en-US"
-def get_casting(movie_id, limit=5):
+def get_casting(movie_id):
     url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?language=en-US"
 
     response = safe_get(url)
@@ -67,3 +79,12 @@ def get_casting(movie_id, limit=5):
 
     return casting
 
+def get_genre_table():
+    url = f"https://api.themoviedb.org/3/genre/movie/list"
+
+    response = safe_get(url)
+    
+    if response is not None:
+        genre_list = response.json()
+
+    return genre_list
