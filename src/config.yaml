@@ -1,0 +1,9 @@
+# config.yaml
+api_tmdb:
+  base_url: "https://api.themoviedb.org/3"
+  timeout: 5
+
+database:
+  host: "localhost"
+  port: 5432
+  name: "mon_projet"
