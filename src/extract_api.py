@@ -96,34 +96,3 @@ def get_genre_table():
         genre_list = response.json()
 
     return genre_list
-
-
-def build_movie_dict():
-    popular_movies = get_popular_movie()
-
-    movies = []
-
-    for movie in popular_movies:
-        details = get_movie_details(movie["id"])
-        casting, directors = get_casting(movie["id"])
-
-        result = {
-            "id": movie.get("id"),
-            "title": movie.get("title"),
-            "tagline": details.get("tagline"),
-            "director": [director["name"] for director in directors],
-            "casting": [actor["name"] for actor in casting],
-            "release": movie.get("release_date"),
-            "duration": details.get("runtime"),
-            "budget" : details.get("budget"),
-            "revenue": details.get("revenue"),
-            "genre_ids": movie.get("genre_ids"),
-            "genres": [genre["name"] for genre in details.get("genres")],
-            "synopsis": movie.get("overview"),
-            "vote_average_tmdb": movie.get("vote_average"),
-            "vote_count_tmdb": movie.get("vote_count"),
-        }
-        
-        movies.append(result)
-        
-    return movies
