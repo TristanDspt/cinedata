@@ -13,7 +13,30 @@ API_KEY = os.getenv("TMDB_API_KEY")
 assert API_KEY, "Missing key : check .env file"
 
 
+def get_headers():
+    """
+    Construit les headers d'authentification pour l'API TMDB.
+
+    Returns:
+        dict: Headers avec Accept et Authorization Bearer.
+    """
+    return {
+        "accept": "application/json",
+        "Authorization": f"Bearer {API_KEY}"
+    }
+
+
 def safe_get(url, retries=3):
+    """
+    Effectue une requête GET sécurisée avec gestion des erreurs et retry sur 429.
+
+    Args:
+        url (str): URL de la requête.
+        retries (int): Nombre de tentatives restantes en cas de 429. Défaut : 3.
+
+    Returns:
+        Response: Objet response requests, ou None en cas d'erreur.
+    """
     if retries == 0:
         print("Too much tentatives, try again later")
         return None
@@ -37,62 +60,117 @@ def safe_get(url, retries=3):
     return None
 
 
-def get_headers():
-    return {
-        "accept": "application/json",
-        "Authorization": f"Bearer {API_KEY}"
-    }
-
-
-def get_popular_movie(limit=5):
-    url = "https://api.themoviedb.org/3/movie/popular?language=en-US&page=1"
+def get_top_movie(limit=5):
+    """
+    Récupère les films les mieux notés sur TMDB, filtrés par nombre de votes.
     
-    response = safe_get(url)
+    Args:
+        limit (int): Nombre de films à retourner. Défaut : 5.
+    
+    Returns:
+        list: Liste de dicts films, ou None en cas d'erreur.
+    """
+    page = 1
+    movies_filtered = []
+    
+    while len(movies_filtered) < limit and page <= 1000:
+        url = f"https://api.themoviedb.org/3/movie/top_rated?language=en-US&page={page}"
+        response = safe_get(url)
+        if response is not None:
+            data = response.json()
+            movies = data["results"]
+            movies_filtered.extend([movie for movie in movies if movie["vote_count"] > 2000])
+            page += 1
+        else:
+            return None
 
-    if response is not None:
-        data = response.json()
-        popular_movies = data["results"][:limit]
-    else:
-        return None
-
-    return popular_movies
+    return movies_filtered[:limit]
 
 
-# url = "https://api.themoviedb.org/3/movie/movie_id?language=en-US"
 def get_movie_details(movie_id):
+    """
+    Récupère les détails d'un film TMDB par son identifiant.
+    
+    Args:
+        movie_id (int): Identifiant TMDB du film.
+    
+    Returns:
+        dict: Détails du film, ou None en cas d'erreur.
+    """
     url = f"https://api.themoviedb.org/3/movie/{movie_id}?language=en-US"
-
     response = safe_get(url)
 
     if response is not None:
-        movie_details = response.json()
-    else:
-        return None
-
-    return movie_details
+        return response.json()
+    return None
 
 
-# url = "https://api.themoviedb.org/3/movie/movie_id/credits?language=en-US"
-def get_casting(movie_id):
+def get_casting(movie_id, limit=5):
+    """
+    Récupère le casting et le(s) réalisateur(s) d'un film TMDB.
+    
+    Args:
+        movie_id (int): Identifiant TMDB du film.
+        limit (int): Nombre d'acteurs à retourner. Défaut : 5.
+    
+    Returns:
+        tuple: (casting, directors) — deux listes de dicts, ou None en cas d'erreur.
+    """
     url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?language=en-US"
-
     response = safe_get(url)
 
     if response is not None:
         data = response.json()
-        casting = data["cast"]
-    else:
-        return None
+        casting = data["cast"][:limit]
+        crew = data["crew"][:limit]
+        directors = [person for person in crew if person["job"] == "Director"]
+        return casting, directors
+    return None
 
-    return casting
+
+# def get_genre_table():
+#     """
+#     Récupère la liste des genres TMDB (id -> nom).
+#     Utile pour une future version avec table genres séparée en DB.
+#
+#     Returns:
+#         list: Liste de dicts {"id": ..., "name": ...}, ou None en cas d'erreur.
+#     """
+#     url = "https://api.themoviedb.org/3/genre/movie/list"
+#     response = safe_get(url)
+#
+#     if response is not None:
+#         return response.json().get("genres", [])
+#     return None
 
 
-def get_genre_table():
-    url = f"https://api.themoviedb.org/3/genre/movie/list"
-
-    response = safe_get(url)
+def get_missings(top_movies):
+    """
+    Identifie les films avec des données manquantes (réalisateur, budget, revenue).
     
-    if response is not None:
-        genre_list = response.json()
+    Args:
+        top_movies (list): Liste de dicts films retournée par get_top_movie().
+    
+    Returns:
+        tuple: (missing_directors, missing_budget, missing_revenue) — trois listes de dicts
+               avec les clés 'id', 'title', 'release_date'.
+    """
+    missing_directors = []
+    missing_budget = []
+    missing_revenue = []
 
-    return genre_list
+    for movie in top_movies:
+        movie_id = movie["id"]
+        details = get_movie_details(movie_id)
+
+        if details is None:
+            continue
+
+        if not details.get("directors"):
+            missing_directors.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"]})
+        if not details.get("budget") or details.get("budget") < 100000:
+            missing_budget.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"]})
+        if not details.get("revenue") or details.get("revenue") < 100000:
+            missing_revenue.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"]})
+
+    return missing_directors, missing_budget, missing_revenue
