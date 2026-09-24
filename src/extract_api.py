@@ -144,7 +144,7 @@ def get_casting(movie_id, limit=5):
 #     Returns:
 #         list: Liste de dicts {"id": ..., "name": ...}, ou None en cas d'erreur.
 #     """
-#     url = "{BASE_URL}/genre/movie/list"
+#     url = f"{BASE_URL}/genre/movie/list"
 #     response = safe_get(url)
 #
 #     if response is not None:
