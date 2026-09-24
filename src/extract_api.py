@@ -130,7 +130,7 @@ def get_casting(movie_id, limit=5):
     if response is not None:
         data = response.json()
         casting = data["cast"][:limit]
-        crew = data["crew"][:limit]
+        crew = data["crew"]
         directors = [person for person in crew if person["job"] == "Director"]
         return casting, directors
     return None
@@ -157,16 +157,15 @@ def get_casting(movie_id, limit=5):
 
 def get_missings(top_movies):
     """
-    Identifie les films avec des données manquantes (réalisateur, budget, revenue).
+    Identifie les films avec des données manquantes (budget, revenue).
     
     Args:
         top_movies (list): Liste de dicts films retournée par get_top_movie().
     
     Returns:
-        tuple: (missing_directors, missing_budget, missing_revenue) — trois listes de dicts
+        tuple: (missing_budget, missing_revenue) — deux listes de dicts
                avec les clés 'id', 'title', 'release_date'.
     """
-    missing_directors = []
     missing_budget = []
     missing_revenue = []
 
@@ -177,11 +176,9 @@ def get_missings(top_movies):
         if details is None:
             continue
 
-        if not details.get("directors"):
-            missing_directors.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"]})
         if not details.get("budget") or details.get("budget") < 100000:
             missing_budget.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"]})
         if not details.get("revenue") or details.get("revenue") < 100000:
             missing_revenue.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"]})
 
-    return missing_directors, missing_budget, missing_revenue
+    return missing_budget, missing_revenue
