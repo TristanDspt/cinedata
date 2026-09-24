@@ -4,6 +4,5 @@ notebooks/
 __pycache__/
 docs/lessons/
 
-extract_api_oop.py
 web_extract.py
 main.py
