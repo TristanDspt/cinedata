@@ -9,6 +9,9 @@ paths:
   ratings: "../data/raw/movie_lens/ratings.csv"
   links: "../data/raw/movie_lens/links.csv"
 
+wikipedia:
+  base_url: "https://en.wikipedia.org"
+
 database:
   host: "localhost"
   port: 5432
