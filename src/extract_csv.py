@@ -3,8 +3,12 @@
 import pandas as pd
 import yaml
 
+# --------------------------------------------------------------------------------
+
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
+
+# --------------------------------------------------------------------------------
 
 def load_movielens(config):
     """
