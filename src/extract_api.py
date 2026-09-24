@@ -2,7 +2,6 @@
 
 import os
 from dotenv import load_dotenv
-import pandas as pd
 import yaml
 
 from utils import safe_get
