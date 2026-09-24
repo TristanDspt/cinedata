@@ -5,13 +5,21 @@ from dotenv import load_dotenv
 import pandas as pd
 import requests
 import time
+import yaml
 
 load_dotenv()
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
 
 API_KEY = os.getenv("TMDB_API_KEY")
+BASE_URL = config["api_tmdb"]["base_url"]
+TIMEOUT = config["api_tmdb"]["timeout"]
 
 assert API_KEY, "Missing key : check .env file"
 
+# --------------------------------------------------------------------------------
+# --                                  EXTRACT                                   --
+# --------------------------------------------------------------------------------
 
 def get_headers():
     """
@@ -41,7 +49,7 @@ def safe_get(url, retries=3):
         print("Too much tentatives, try again later")
         return None
     try:
-        response = requests.get(url, headers=get_headers(), timeout=5)
+        response = requests.get(url, headers=get_headers(), timeout=TIMEOUT)
         response.raise_for_status()
         return response
     except requests.exceptions.ConnectionError:
@@ -74,7 +82,7 @@ def get_top_movie(limit=5):
     movies_filtered = []
     
     while len(movies_filtered) < limit and page <= 1000:
-        url = f"https://api.themoviedb.org/3/movie/top_rated?language=en-US&page={page}"
+        url = f"{BASE_URL}/movie/top_rated?language=en-US&page={page}"
         response = safe_get(url)
         if response is not None:
             data = response.json()
@@ -97,7 +105,7 @@ def get_movie_details(movie_id):
     Returns:
         dict: Détails du film, ou None en cas d'erreur.
     """
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?language=en-US"
+    url = f"{BASE_URL}/movie/{movie_id}?language=en-US"
     response = safe_get(url)
 
     if response is not None:
@@ -116,7 +124,7 @@ def get_casting(movie_id, limit=5):
     Returns:
         tuple: (casting, directors) — deux listes de dicts, ou None en cas d'erreur.
     """
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?language=en-US"
+    url = f"{BASE_URL}/movie/{movie_id}/credits?language=en-US"
     response = safe_get(url)
 
     if response is not None:
@@ -136,13 +144,16 @@ def get_casting(movie_id, limit=5):
 #     Returns:
 #         list: Liste de dicts {"id": ..., "name": ...}, ou None en cas d'erreur.
 #     """
-#     url = "https://api.themoviedb.org/3/genre/movie/list"
+#     url = "{BASE_URL}/genre/movie/list"
 #     response = safe_get(url)
 #
 #     if response is not None:
 #         return response.json().get("genres", [])
 #     return None
 
+# --------------------------------------------------------------------------------
+# --                                 TRANSFORM                                  --
+# --------------------------------------------------------------------------------
 
 def get_missings(top_movies):
     """
