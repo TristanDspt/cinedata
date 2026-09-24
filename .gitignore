@@ -5,4 +5,5 @@ __pycache__/
 docs/lessons/
 
 web_extract.py
+load_to_db.py
 main.py
