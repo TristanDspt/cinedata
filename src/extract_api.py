@@ -50,13 +50,14 @@ def get_top_movie(limit=5):
     while len(movies_filtered) < limit and page <= 1000:
         url = f"{BASE_URL}/movie/top_rated?language=en-US&page={page}"
         response = safe_get(url, headers=get_headers())
-        if response is not None:
-            data = response.json()
-            movies = data["results"]
-            movies_filtered.extend([movie for movie in movies if movie["vote_count"] > 2000])
-            page += 1
-        else:
+        
+        if response is None:
             return None
+        
+        data = response.json()
+        movies = data["results"]
+        movies_filtered.extend([movie for movie in movies if movie["vote_count"] > 2000])
+        page += 1
 
     return movies_filtered[:limit]
 
@@ -74,9 +75,10 @@ def get_movie_details(movie_id):
     url = f"{BASE_URL}/movie/{movie_id}?language=en-US"
     response = safe_get(url, headers=get_headers())
 
-    if response is not None:
-        return response.json()
-    return None
+    if response is None:
+        return None
+    
+    return response.json()
 
 
 def get_casting(movie_id, limit=5):
@@ -93,29 +95,32 @@ def get_casting(movie_id, limit=5):
     url = f"{BASE_URL}/movie/{movie_id}/credits?language=en-US"
     response = safe_get(url, headers=get_headers())
 
-    if response is not None:
-        data = response.json()
-        casting = data["cast"][:limit]
-        crew = data["crew"]
-        directors = [person for person in crew if person["job"] == "Director"]
-        return casting, directors
-    return None
+    if response is None:
+        return None
+    
+    data = response.json()
+    casting = data["cast"][:limit]
+    crew = data["crew"]
+    directors = [person for person in crew if person["job"] == "Director"]
+
+    return casting, directors
 
 
-# def get_genre_table():
-#     """
-#     Récupère la liste des genres TMDB (id -> nom).
-#     Utile pour une future version avec table genres séparée en DB.
-#
-#     Returns:
-#         list: Liste de dicts {"id": ..., "name": ...}, ou None en cas d'erreur.
-#     """
-#     url = f"{BASE_URL}/genre/movie/list"
-#     response = safe_get(url, headers=get_headers())
-#
-#     if response is not None:
-#         return response.json().get("genres", [])
-#     return None
+def get_genre_table():
+    """
+    Récupère la liste des genres TMDB (id -> nom).
+    Utile pour une future version avec table genres séparée en DB.
+
+    Returns:
+        list: Liste de dicts {"id": ..., "name": ...}, ou None en cas d'erreur.
+    """
+    url = f"{BASE_URL}/genre/movie/list"
+    response = safe_get(url, headers=get_headers())
+
+    if response is None:
+        return None
+    
+    return response.json().get("genres", [])
 
 # --------------------------------------------------------------------------------
 # --                                 TRANSFORM                                  --
