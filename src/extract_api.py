@@ -3,9 +3,9 @@
 import os
 from dotenv import load_dotenv
 import pandas as pd
-import requests
-import time
 import yaml
+
+from utils import safe_get
 
 # --------------------------------------------------------------------------------
 
@@ -15,7 +15,6 @@ with open("config.yaml", "r") as f:
 
 API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = config["api_tmdb"]["base_url"]
-TIMEOUT = config["api_tmdb"]["timeout"]
 
 assert API_KEY, "Missing key : check .env file"
 
@@ -51,7 +50,7 @@ def get_top_movie(limit=5):
     
     while len(movies_filtered) < limit and page <= 1000:
         url = f"{BASE_URL}/movie/top_rated?language=en-US&page={page}"
-        response = safe_get(url)
+        response = safe_get(url, headers=get_headers())
         if response is not None:
             data = response.json()
             movies = data["results"]
@@ -74,7 +73,7 @@ def get_movie_details(movie_id):
         dict: Détails du film, ou None en cas d'erreur.
     """
     url = f"{BASE_URL}/movie/{movie_id}?language=en-US"
-    response = safe_get(url)
+    response = safe_get(url, headers=get_headers())
 
     if response is not None:
         return response.json()
@@ -93,7 +92,7 @@ def get_casting(movie_id, limit=5):
         tuple: (casting, directors) — deux listes de dicts, ou None en cas d'erreur.
     """
     url = f"{BASE_URL}/movie/{movie_id}/credits?language=en-US"
-    response = safe_get(url)
+    response = safe_get(url, headers=get_headers())
 
     if response is not None:
         data = response.json()
@@ -113,7 +112,7 @@ def get_casting(movie_id, limit=5):
 #         list: Liste de dicts {"id": ..., "name": ...}, ou None en cas d'erreur.
 #     """
 #     url = f"{BASE_URL}/genre/movie/list"
-#     response = safe_get(url)
+#     response = safe_get(url, headers=get_headers())
 #
 #     if response is not None:
 #         return response.json().get("genres", [])
