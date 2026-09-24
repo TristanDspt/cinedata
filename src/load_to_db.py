@@ -31,7 +31,7 @@ def build_movie_dict(df):
             #"genre_ids": movie.get("genre_ids"),
             "genres": [genre["name"] for genre in details.get("genres")],
             "synopsis": movie.get("overview"),
-            "vote_average_tmdb": movie.get("vote_average"),
+            "vote_average_tmdb": round(movie.get("vote_average"), 1),
             "vote_count_tmdb": movie.get("vote_count"),
             "vote_average_ml": df.query("tmdbId == @movie_id")["rating_mean_ml"].iloc[0],
             "vote_count_ml": df.query("tmdbId == @movie_id")["rating_count_ml"].iloc[0]

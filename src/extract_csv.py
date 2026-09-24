@@ -26,6 +26,7 @@ def load_movielens(config):
 
     df_ratings = df_ratings.groupby(["movieId"]).agg({"rating": ["mean", "count"]}).reset_index().copy()
     df_ratings.columns = ["movieId", "vote_average_ml", "vote_count_ml"]
+    df_ratings["vote_average_ml"] = round(df_ratings["vote_average_ml"] * 2, 1)
     df = df_ratings.merge(df_links, on="movieId", how="inner")
     df = df.drop(columns=["imdbId", "movieId"])
 
