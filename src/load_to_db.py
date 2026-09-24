@@ -1,13 +1,20 @@
+# load_to_db.py
+
+import yaml
+
 import extract_api as api
 import extract_csv as csv
 
 
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+
 def build_movie_dict(df):
-    popular_movies = api.get_popular_movie()
+    top100_movies = api.get_top_movie()
 
     movies = []
 
-    for movie in popular_movies:
+    for movie in top100_movies:
         details = api.get_movie_details(movie["id"])
         casting, directors = api.get_casting(movie["id"])
 
