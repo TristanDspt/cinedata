@@ -13,7 +13,7 @@ with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 BASE_URL = config["wikipedia"]["base_url"]
-WIKI_RAW = config["JSON_path"]["raw_wiki"]
+WIKI_RAW = config["path"]["raw_wiki"]
 
 # --------------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ def scrape_infobox(film_url):
 
 # --------------------------------------------------------------------------------
 
-def enrich_from_wikipedia(raw_tmdb, force_refresh):
+def enrich_from_wikipedia(raw_tmdb, force_refresh=False):
     if os.path.exists(WIKI_RAW) and not force_refresh:
         with open(WIKI_RAW, "r") as f:
             enriched_from_wiki = json.load(f)
