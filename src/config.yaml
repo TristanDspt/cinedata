@@ -5,9 +5,12 @@ api_tmdb:
   timeout: 5
   language: "en-EN"
 
-paths:
-  ratings: "../data/raw/movie_lens/ratings.csv"
-  links: "../data/raw/movie_lens/links.csv"
+path:
+  raw_tmdb: "../data/raw/tmdb.json"
+  ml_ratings: "../data/raw/ml_ratings.csv"
+  ml_links: "../data/raw/ml_links.csv"
+  raw_wiki: "../data/raw/wiki.json"
+  export: "../data/processed/export_to_db.csv"
 
 wikipedia:
   base_url: "https://en.wikipedia.org"
