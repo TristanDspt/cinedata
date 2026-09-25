@@ -15,7 +15,7 @@ with open("config.yaml", "r") as f:
 
 API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = config["api_tmdb"]["base_url"]
-TMDB_RAW = config["JSON_path"]["tmdb_raw"]
+TMDB_RAW = config["JSON_path"]["raw_tmdb"]
 
 assert API_KEY, "Missing key : check .env file"
 
@@ -121,7 +121,6 @@ def extract_tmdb(limit=5, force_refresh=False):
         with open(TMDB_RAW, "r") as f:
             enriched_movies = json.load(f)
     else:
-
         top_movies = get_top_movie(limit=limit)
         movies = []
         missing = []
@@ -163,8 +162,8 @@ def extract_tmdb(limit=5, force_refresh=False):
                 "vote_count_tmdb": movie.get("vote_count"),
             })
 
-        enriched_movies = {"movies": movies, "missing": missing}
+        extract_tmdb = {"movies": movies, "missing": missing}
         with open(TMDB_RAW, "w") as f:
-            json.dump(enriched_movies, f)
+            json.dump(extract_tmdb, f)
 
-    return enriched_movies
+    return extract_tmdb
