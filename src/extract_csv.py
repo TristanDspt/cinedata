@@ -21,8 +21,8 @@ def load_movielens(config):
     Returns:
         DataFrame: Colonnes tmdbId, vote_average_ml, vote_count_ml.
     """
-    df_links = pd.read_csv(config["paths"]["links"])
-    df_ratings = pd.read_csv(config["paths"]["ratings"])
+    df_links = pd.read_csv(config["CSV_paths"]["ml_links"])
+    df_ratings = pd.read_csv(config["CSV_paths"]["ml_ratings"])
 
     df_ratings = df_ratings.groupby(["movieId"]).agg({"rating": ["mean", "count"]}).reset_index().copy()
     df_ratings.columns = ["movieId", "vote_average_ml", "vote_count_ml"]
