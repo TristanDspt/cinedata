@@ -1,42 +1,50 @@
 # load_to_db.py
 
+import os
 import yaml
+import json
+import pandas as pd
 
-import extract_api as api
-import extract_csv as csv
+from extract_csv import load_movielens
 
+# --------------------------------------------------------------------------------
 
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
-def build_movie_dict(df):
-    top100_movies = api.get_top_movie()
+TMDB_RAW = config["path"]["raw_tmdb"]
+WIKI_RAW = config["path"]["raw_wiki"]
 
-    movies = []
+# --------------------------------------------------------------------------------
 
-    for movie in top100_movies:
-        details = api.get_movie_details(movie["id"])
-        casting, directors = api.get_casting(movie["id"])
+def build_movie_dict(tmdb_data, df, wiki_data):
+    top_movies = tmdb_data["movies"]
+    enriched_by_id = {e["id"]: e for e in wiki_data}
+    data = []
+
+    for movie in top_movies:
+        movie_id = movie["id"]
+        ml_data = df.query("tmdbId == @movie_id")
+        enriched = enriched_by_id.get(movie_id)
 
         result = {
             "id": movie.get("id"),
             "title": movie.get("title"),
-            "tagline": details.get("tagline"),
-            "director": [director["name"] for director in directors],
-            "casting": [actor["name"] for actor in casting],
+            "tagline": movie.get("tagline"),
+            "director": movie.get("directors"),
+            "casting": movie.get("casting"),
             "release": movie.get("release_date"),
-            "duration": details.get("runtime"),
-            "budget" : details.get("budget"),
-            "revenue": details.get("revenue"),
-            #"genre_ids": movie.get("genre_ids"),
-            "genres": [genre["name"] for genre in details.get("genres")],
-            "synopsis": movie.get("overview"),
-            "vote_average_tmdb": round(movie.get("vote_average"), 1),
-            "vote_count_tmdb": movie.get("vote_count"),
-            "vote_average_ml": df.query("tmdbId == @movie_id")["rating_mean_ml"].iloc[0],
-            "vote_count_ml": df.query("tmdbId == @movie_id")["rating_count_ml"].iloc[0]
+            "duration": movie.get("duration"),
+            "budget": enriched.get("budget") if enriched is not None else movie.get("budget"),
+            "revenue": enriched.get("revenue") if enriched is not None else movie.get("revenue"),
+            "genres": movie.get("genres"),
+            "synopsis": movie.get("synopsis"),
+            "vote_average_tmdb": movie.get("vote_average_tmdb"),
+            "vote_count_tmdb": movie.get("vote_count_tmdb"),
+            "vote_average_ml": ml_data["vote_average_ml"].iloc[0] if not ml_data.empty else None,
+            "vote_count_ml": ml_data["vote_count_ml"].iloc[0] if not ml_data.empty else None
         }
         
-        movies.append(result)
+        data.append(result)
         
-    return movies
+    return data
