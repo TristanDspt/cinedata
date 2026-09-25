@@ -24,14 +24,15 @@ def get_wikipedia_url(title, release_date):
     release_year = release_date[:4]
     clean_title = title.replace(" ", "+")
 
-    url = f"{BASE_URL}/w/index.php?search=film+{clean_title}+{release_year}&title=Special:Search"
+    url = f"{BASE_URL}/w/index.php?search=movie+{clean_title}+{release_year}&title=Special:Search"
     
     return url
 
 
 def scrape_wikipedia(title, release_date):
     search_url = get_wikipedia_url(title, release_date)
-    response = safe_get(search_url)
+    headers = {"User-Agent": "CineDataBot/1.0 (educational project; student@cinedata.edu)"}
+    response = safe_get(search_url, headers=headers)
 
     if response is None:
         return None
@@ -44,7 +45,7 @@ def scrape_wikipedia(title, release_date):
         if film_url.startswith("/"):
             film_url = BASE_URL + film_url
     else:
-        print(f"No URL for {title}")
+        print(f"No URL find for {title}")
         return None
 
     return film_url

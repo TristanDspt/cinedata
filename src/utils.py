@@ -40,6 +40,8 @@ def safe_get(url, retries=3, headers=None, timeout=TIMEOUT):
     except requests.exceptions.Timeout:
         print("Timeout.")
     except requests.exceptions.HTTPError as err:
+        if err.response.status_code == 403:
+            pass
         if err.response.status_code == 429:
             time_sleep = int(err.response.headers["Retry-After"]) + 1
             time.sleep(time_sleep)
