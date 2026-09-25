@@ -1,12 +1,16 @@
 # utils.py
 
+import os
 import requests
 import time
 import yaml
 
 # --------------------------------------------------------------------------------
 
-with open("config.yaml", "r") as f:
+BASE_DIR = os.path.dirname(__file__)
+config_path = os.path.join(BASE_DIR, "config.yaml")
+
+with open(config_path, "r") as f:
     config = yaml.safe_load(f)
 
 TIMEOUT = config["api_tmdb"]["timeout"]

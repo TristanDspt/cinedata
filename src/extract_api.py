@@ -10,7 +10,11 @@ from utils import safe_get
 # --------------------------------------------------------------------------------
 
 load_dotenv()
-with open("config.yaml", "r") as f:
+
+BASE_DIR = os.path.dirname(__file__)
+config_path = os.path.join(BASE_DIR, "config.yaml")
+
+with open(config_path, "r") as f:
     config = yaml.safe_load(f)
 
 API_KEY = os.getenv("TMDB_API_KEY")

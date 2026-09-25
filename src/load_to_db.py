@@ -2,14 +2,13 @@
 
 import os
 import yaml
-import json
-import pandas as pd
-
-from extract_csv import load_movielens
 
 # --------------------------------------------------------------------------------
 
-with open("config.yaml", "r") as f:
+BASE_DIR = os.path.dirname(__file__)
+config_path = os.path.join(BASE_DIR, "config.yaml")
+
+with open(config_path, "r") as f:
     config = yaml.safe_load(f)
 
 TMDB_RAW = config["path"]["raw_tmdb"]
