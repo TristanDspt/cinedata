@@ -6,11 +6,11 @@ api_tmdb:
   language: "en-EN"
 
 path:
-  raw_tmdb: "../data/raw/tmdb.json"
-  ml_ratings: "../data/raw/ml_ratings.csv"
-  ml_links: "../data/raw/ml_links.csv"
-  raw_wiki: "../data/raw/wiki.json"
-  export: "../data/processed/export_to_db.csv"
+  raw_tmdb: "data/raw/tmdb.json"
+  ml_ratings: "data/raw/ml_ratings.csv"
+  ml_links: "data/raw/ml_links.csv"
+  raw_wiki: "data/raw/wiki.json"
+  export: "data/processed/export_to_db.csv"
 
 wikipedia:
   base_url: "https://en.wikipedia.org"
