@@ -1,5 +1,6 @@
 # main
 
+import os
 import pandas as pd
 import yaml
 
@@ -10,7 +11,10 @@ from load_to_db import build_movie_dict
 
 # --------------------------------------------------------------------------------
 
-with open("config.yaml", "r") as f:
+BASE_DIR = os.path.dirname(__file__)
+config_path = os.path.join(BASE_DIR, "config.yaml")
+
+with open(config_path, "r") as f:
     config = yaml.safe_load(f)
 
 EXPORT_TO_DB = config["path"]["export"]
