@@ -18,6 +18,8 @@ with open(config_path, "r") as f:
 BASE_URL = config["wikipedia"]["base_url"]
 WIKI_RAW = config["path"]["raw_wiki"]
 
+WIKI_HEADERS = {"User-Agent": "CineDataBot/1.0 (educational project; student@cinedata.edu)"}
+
 # --------------------------------------------------------------------------------
 
 def get_wikipedia_url(title, release_date):
@@ -31,8 +33,7 @@ def get_wikipedia_url(title, release_date):
 
 def scrape_wikipedia(title, release_date):
     search_url = get_wikipedia_url(title, release_date)
-    headers = {"User-Agent": "CineDataBot/1.0 (educational project; student@cinedata.edu)"}
-    response = safe_get(search_url, headers=headers)
+    response = safe_get(search_url, headers=WIKI_HEADERS)
 
     if response is None:
         return None
@@ -45,14 +46,14 @@ def scrape_wikipedia(title, release_date):
         if film_url.startswith("/"):
             film_url = BASE_URL + film_url
     else:
-        print(f"No URL find for {title}")
+        print(f"Unable to generate a URL for {title}")
         return None
 
     return film_url
 
 
 def scrape_infobox(film_url):
-    response = safe_get(film_url)
+    response = safe_get(film_url, headers=WIKI_HEADERS)
     result = {"budget": None, "revenue": None}
 
     if response is None:
@@ -91,12 +92,12 @@ def enrich_from_wikipedia(raw_tmdb, force_refresh=False):
 
             url = scrape_wikipedia(title, release_date)
             if url is None:
-                print(f"No URL for {title}")
+                print(f"No URL find for {title}")
                 continue
 
             result = scrape_infobox(url)
             if result is None:
-                print(f"No scrape for {title}")
+                print(f"Unable to scrappe for {title}")
                 continue
 
             enriched = {
