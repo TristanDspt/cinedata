@@ -3,6 +3,7 @@
 import os
 from dotenv import load_dotenv
 import yaml
+import json
 
 from utils import safe_get
 
@@ -17,8 +18,6 @@ BASE_URL = config["api_tmdb"]["base_url"]
 
 assert API_KEY, "Missing key : check .env file"
 
-# --------------------------------------------------------------------------------
-# --                                  EXTRACT                                   --
 # --------------------------------------------------------------------------------
 
 def get_headers():
@@ -105,51 +104,60 @@ def get_casting(movie_id, limit=5):
 
     return casting, directors
 
-
-def get_genre_table():
-    """
-    Récupère la liste des genres TMDB (id -> nom).
-    Utile pour une future version avec table genres séparée en DB.
-
-    Returns:
-        list: Liste de dicts {"id": ..., "name": ...}, ou None en cas d'erreur.
-    """
-    url = f"{BASE_URL}/genre/movie/list"
-    response = safe_get(url, headers=get_headers())
-
-    if response is None:
-        return None
-    
-    return response.json().get("genres", [])
-
-# --------------------------------------------------------------------------------
-# --                                 TRANSFORM                                  --
 # --------------------------------------------------------------------------------
 
-def get_missings(top_movies):
+def extract_tmdb(limit=5):
     """
-    Identifie les films avec des données manquantes (budget, revenue).
+    Extrait les films les mieux notés de TMDB avec leurs détails et casting.
     
     Args:
-        top_movies (list): Liste de dicts films retournée par get_top_movie().
+        limit (int): Nombre de films à extraire. Défaut : 5.
     
     Returns:
-        tuple: (missing_budget, missing_revenue) — deux listes de dicts
-               avec les clés 'id', 'title', 'release_date'.
+        list: Liste de dicts films enrichis, ou None en cas d'erreur.
     """
-    missing_budget = []
-    missing_revenue = []
+    top_movies = get_top_movie(limit=limit)
+    enriched_movies = []
+    missing = []
 
     for movie in top_movies:
         movie_id = movie["id"]
+        
         details = get_movie_details(movie_id)
-
         if details is None:
             continue
 
-        if not details.get("budget") or details.get("budget") < 100000:
-            missing_budget.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"]})
-        if not details.get("revenue") or details.get("revenue") < 100000:
-            missing_revenue.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"]})
+        result = get_casting(movie_id)
+        if result is None:
+            continue
 
-    return missing_budget, missing_revenue
+        casting, directors = result
+        if casting is None or directors is None:
+            continue
+
+        missing_fields = []
+        if not details.get("budget") or details.get("budget") < 100000:
+            missing_fields.append("budget")
+        if not details.get("revenue") or details.get("revenue") < 100000:
+            missing_fields.append("revenue")
+
+        if missing_fields:
+            missing.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"], "missing_fields": missing_fields})
+
+        enriched_movies.append({
+            "id": movie_id,
+            "title": movie.get("title"),
+            "release_date": movie.get("release_date"),
+            "budget": details.get("budget"),
+            "revenue": details.get("revenue"),
+            "genres": [genre["name"] for genre in details.get("genres")],
+            "casting": [actor["name"] for actor in casting],
+            "directors": [director["name"] for director in directors],
+            "vote_average_tmdb": movie.get("vote_average"),
+            "vote_count_tmdb": movie.get("vote_count"),
+        })
+
+    with open("raw_tmdb.json", "w") as f:
+        json.dump(enriched_movies, f)
+
+    return enriched_movies, missing
