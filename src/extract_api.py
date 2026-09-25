@@ -15,6 +15,7 @@ with open("config.yaml", "r") as f:
 
 API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = config["api_tmdb"]["base_url"]
+TMDB_RAW = config["JSON_path"]["tmdb_raw"]
 
 assert API_KEY, "Missing key : check .env file"
 
@@ -106,7 +107,7 @@ def get_casting(movie_id, limit=5):
 
 # --------------------------------------------------------------------------------
 
-def extract_tmdb(limit=5):
+def extract_tmdb(limit=5, force_refresh=False):
     """
     Extrait les films les mieux notés de TMDB avec leurs détails et casting.
     
@@ -116,48 +117,54 @@ def extract_tmdb(limit=5):
     Returns:
         list: Liste de dicts films enrichis, ou None en cas d'erreur.
     """
-    top_movies = get_top_movie(limit=limit)
-    enriched_movies = []
-    missing = []
+    if os.path.exists(TMDB_RAW) and not force_refresh:
+        with open(TMDB_RAW, "r") as f:
+            enriched_movies = json.load(f)
+    else:
 
-    for movie in top_movies:
-        movie_id = movie["id"]
-        
-        details = get_movie_details(movie_id)
-        if details is None:
-            continue
+        top_movies = get_top_movie(limit=limit)
+        movies = []
+        missing = []
 
-        result = get_casting(movie_id)
-        if result is None:
-            continue
+        for movie in top_movies:
+            movie_id = movie["id"]
+            
+            details = get_movie_details(movie_id)
+            if details is None:
+                continue
 
-        casting, directors = result
-        if casting is None or directors is None:
-            continue
+            result = get_casting(movie_id)
+            if result is None:
+                continue
 
-        missing_fields = []
-        if not details.get("budget") or details.get("budget") < 100000:
-            missing_fields.append("budget")
-        if not details.get("revenue") or details.get("revenue") < 100000:
-            missing_fields.append("revenue")
+            casting, directors = result
+            if casting is None or directors is None:
+                continue
 
-        if missing_fields:
-            missing.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"], "missing_fields": missing_fields})
+            missing_fields = []
+            if not details.get("budget") or details.get("budget") < 100000:
+                missing_fields.append("budget")
+            if not details.get("revenue") or details.get("revenue") < 100000:
+                missing_fields.append("revenue")
 
-        enriched_movies.append({
-            "id": movie_id,
-            "title": movie.get("title"),
-            "release_date": movie.get("release_date"),
-            "budget": details.get("budget"),
-            "revenue": details.get("revenue"),
-            "genres": [genre["name"] for genre in details.get("genres")],
-            "casting": [actor["name"] for actor in casting],
-            "directors": [director["name"] for director in directors],
-            "vote_average_tmdb": movie.get("vote_average"),
-            "vote_count_tmdb": movie.get("vote_count"),
-        })
+            if missing_fields:
+                missing.append({"id": movie_id, "title": movie["title"], "release_date": movie["release_date"], "missing_fields": missing_fields})
 
-    with open("raw_tmdb.json", "w") as f:
-        json.dump(enriched_movies, f)
+            movies.append({
+                "id": movie_id,
+                "title": movie.get("title"),
+                "release_date": movie.get("release_date"),
+                "budget": details.get("budget"),
+                "revenue": details.get("revenue"),
+                "genres": [genre["name"] for genre in details.get("genres")],
+                "casting": [actor["name"] for actor in casting],
+                "directors": [director["name"] for director in directors],
+                "vote_average_tmdb": movie.get("vote_average"),
+                "vote_count_tmdb": movie.get("vote_count"),
+            })
 
-    return enriched_movies, missing
+        enriched_movies = {"movies": movies, "missing": missing}
+        with open(TMDB_RAW, "w") as f:
+            json.dump(enriched_movies, f)
+
+    return enriched_movies
