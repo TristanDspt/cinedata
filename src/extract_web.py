@@ -59,9 +59,15 @@ def scrape_infobox(film_url):
     th_revenue = soup.find("th", string="Box office")
 
     if th_budget:
-        result["budget"] = th_budget.parent.find("td").text
+        td = th_budget.parent.find("td")
+        for sup in td.find_all("sup"):
+            sup.decompose()
+        result["budget"] = td.text
     if th_revenue: 
-        result["revenue"] = th_revenue.parent.find("td").text
+        td = th_revenue.parent.find("td")
+        for sup in td.find_all("sup"):
+            sup.decompose()
+        result["revenue"] = td.text
 
     return result
 
