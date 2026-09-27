@@ -1,8 +1,18 @@
-# load_to_db.py
+"""load_to_db.py
+
+Fusionne les données issues de TMDB, MovieLens (CSV) et Wikipedia en une
+liste de dictionnaires "films" prête à être chargée en base de données.
+
+Wikipedia sert de source de secours pour le budget et les revenus quand
+TMDB ne les fournit pas, et MovieLens complète les notes/votes (vote_average_ml,
+vote_count_ml) via la correspondance sur l'identifiant TMDB (tmdbId).
+"""
 
 import os
 import yaml
 
+# --------------------------------------------------------------------------------
+# Chargement de la configuration (chemins des fichiers de données brutes)
 # --------------------------------------------------------------------------------
 
 BASE_DIR = os.path.dirname(__file__)
@@ -17,7 +27,28 @@ WIKI_RAW = config["path"]["raw_wiki"]
 # --------------------------------------------------------------------------------
 
 def build_movie_dict(tmdb_data, df, wiki_data):
+    """Construit la liste des films enrichis à partir des trois sources de données.
+
+    Le budget et les revenus viennent de TMDB par défaut ; pour les films où
+    TMDB ne les fournissait pas, on utilise la valeur récupérée sur Wikipedia
+    (enrichissement). Les notes MovieLens sont ajoutées par jointure sur
+    l'identifiant TMDB.
+
+    Args:
+        tmdb_data (dict): Données brutes TMDB, sous la clé "movies" (liste de films).
+        df (pandas.DataFrame): Données MovieLens, doit contenir les colonnes
+            "tmdbId", "vote_average_ml" et "vote_count_ml".
+        wiki_data (list[dict]): Données scrappées sur Wikipedia, chaque entrée
+            contenant au moins "id", "budget" et "revenue".
+
+    Returns:
+        list[dict]: Un dictionnaire par film, avec les champs fusionnés
+            (id, title, tagline, director, casting, release, duration,
+            budget, revenue, genres, synopsis, vote_average_tmdb,
+            vote_count_tmdb, vote_average_ml, vote_count_ml).
+    """
     top_movies = tmdb_data["movies"]
+    # Index par id pour retrouver rapidement l'enrichissement Wikipedia d'un film
     enriched_by_id = {e["id"]: e for e in wiki_data}
     data = []
 
@@ -30,20 +61,23 @@ def build_movie_dict(tmdb_data, df, wiki_data):
             "id": movie.get("id"),
             "title": movie.get("title"),
             "tagline": movie.get("tagline"),
-            "director": movie.get("directors"),
-            "casting": movie.get("casting"),
+            "director": ", ".join(movie.get("directors", [])),
+            "casting": ", ".join(movie.get("casting", [])),
             "release": movie.get("release_date"),
             "duration": movie.get("duration"),
+            # TMDB en priorité ; "enriched" n'existe que pour les films dont le
+            # budget/revenue était manquant côté TMDB (cf. raw_tmdb["missing"]
+            # dans extract_web.py), on utilise alors la valeur Wikipedia
             "budget": enriched.get("budget") if enriched is not None else movie.get("budget"),
             "revenue": enriched.get("revenue") if enriched is not None else movie.get("revenue"),
-            "genres": movie.get("genres"),
+            "genres": ", ".join(movie.get("genres", [])),
             "synopsis": movie.get("synopsis"),
             "vote_average_tmdb": movie.get("vote_average_tmdb"),
             "vote_count_tmdb": movie.get("vote_count_tmdb"),
             "vote_average_ml": ml_data["vote_average_ml"].iloc[0] if not ml_data.empty else None,
             "vote_count_ml": ml_data["vote_count_ml"].iloc[0] if not ml_data.empty else None
         }
-        
+
         data.append(result)
-        
+
     return data
