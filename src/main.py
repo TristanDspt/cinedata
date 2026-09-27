@@ -12,7 +12,7 @@ import yaml
 from extract_api import extract_tmdb
 from extract_csv import load_movielens
 from extract_web import enrich_from_wikipedia
-from load_to_db import build_movie_dict
+from load_to_db import build_movie_dict, init_db, load_to_db
 
 # --------------------------------------------------------------------------------
 
@@ -37,3 +37,6 @@ if __name__ == "__main__":
     data = build_movie_dict(tmdb, movie_lens, tmdb_enriched)
 
     pd.DataFrame(data).to_csv(EXPORT_TO_DB, index=False)
+
+    init_db()
+    load_to_db(data)
