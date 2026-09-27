@@ -1,4 +1,12 @@
-# extract_api.py
+"""extract_api.py
+
+Extraction des films depuis l'API TMDB : sélection des mieux notés, récupération
+des détails et du casting, puis sauvegarde en JSON (data/raw/tmdb.json).
+
+Les films dont le budget ou le revenu est absent ou trop faible pour être
+fiable sont aussi listés à part (clé "missing") afin d'être complétés
+ensuite via le scraping Wikipedia (voir extract_web.py).
+"""
 
 import os
 from dotenv import load_dotenv
@@ -50,14 +58,17 @@ def get_top_movie(limit=5):
     """
     page = 1
     movies_filtered = []
-    
+
+    # TMDB pagine ses résultats ; on avance page par page jusqu'à réunir assez
+    # de films ayant un nombre de votes significatif (> 2000), avec une borne
+    # de sécurité à 1000 pages pour éviter une boucle infinie
     while len(movies_filtered) < limit and page <= 1000:
         url = f"{BASE_URL}/movie/top_rated?language=en-US&page={page}"
         response = safe_get(url, headers=get_headers())
-        
+
         if response is None:
             return None
-        
+
         data = response.json()
         movies = data["results"]
         movies_filtered.extend([movie for movie in movies if movie["vote_count"] > 2000])
@@ -144,6 +155,9 @@ def extract_tmdb(limit=5, force_refresh=False):
             if casting is None or directors is None:
                 continue
 
+            # En dessous de 100 000, le budget/revenu TMDB est considéré comme
+            # non renseigné ou pas assez fiable : le film est marqué "missing"
+            # pour être complété plus tard via Wikipedia
             missing_fields = []
             if not details.get("budget") or details.get("budget") < 100000:
                 missing_fields.append("budget")

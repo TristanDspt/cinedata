@@ -1,19 +1,22 @@
 # config.yaml
+# Configuration centrale du pipeline cinedata (extraction TMDB/Wikipedia/MovieLens,
+# chemins des fichiers de données et connexion base de données).
 
 api_tmdb:
   base_url: "https://api.themoviedb.org/3"
-  timeout: 5
-  language: "en-EN"
+  timeout: 5          # délai max (en secondes) avant abandon d'une requête TMDB
+  language: "en-EN"   # langue des données retournées par l'API TMDB
 
+# Chemins des fichiers de données, relatifs à la racine du projet
 path:
-  raw_tmdb: "data/raw/tmdb.json"
-  ml_ratings: "data/raw/ml_ratings.csv"
-  ml_links: "data/raw/ml_links.csv"
-  raw_wiki: "data/raw/wiki.json"
-  export: "data/processed/export_to_db.csv"
+  raw_tmdb: "data/raw/tmdb.json"                  # extraction brute TMDB (movies + missing)
+  ml_ratings: "data/raw/ml_ratings.csv"           # notes MovieLens (source des vote_average_ml / vote_count_ml)
+  ml_links: "data/raw/ml_links.csv"               # table de correspondance MovieLens <-> TMDB (tmdbId)
+  raw_wiki: "data/raw/wiki.json"                  # enrichissement budget/revenue scrappé sur Wikipedia
+  export: "data/processed/export_to_db.csv"       # fichier final prêt à charger en base
 
 wikipedia:
-  base_url: "https://en.wikipedia.org"
+  base_url: "https://en.wikipedia.org"  # utilisé pour construire les URLs de recherche/scraping
 
 database:
   host: "localhost"

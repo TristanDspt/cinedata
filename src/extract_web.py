@@ -1,4 +1,10 @@
-# web_extract.py
+"""web_extract.py
+
+Enrichissement des films depuis Wikipedia : pour les films dont TMDB n'a pas
+fourni de budget/revenu fiable (voir extract_api.py, clé "missing"), on
+recherche la page Wikipedia correspondante et on en extrait ces valeurs
+depuis l'infobox, avant sauvegarde en JSON (data/raw/wiki.json).
+"""
 
 import os
 from bs4 import BeautifulSoup
@@ -23,21 +29,46 @@ WIKI_HEADERS = {"User-Agent": "CineDataBot/1.0 (educational project; student@cin
 # --------------------------------------------------------------------------------
 
 def get_wikipedia_url(title, release_date):
+    """
+    Construit l'URL de recherche Wikipedia pour un film donné.
+
+    Args:
+        title (str): Titre du film.
+        release_date (str): Date de sortie au format "YYYY-MM-DD" (seule
+            l'année est utilisée pour affiner la recherche).
+
+    Returns:
+        str: URL de la page de résultats de recherche Wikipedia.
+    """
     release_year = release_date[:4]
     clean_title = title.replace(" ", "+")
 
     url = f"{BASE_URL}/w/index.php?search=movie+{clean_title}+{release_year}&title=Special:Search"
-    
+
     return url
 
 
 def scrape_wikipedia(title, release_date):
+    """
+    Recherche un film sur Wikipedia et retourne l'URL de sa page.
+
+    Prend le premier résultat de la recherche (data-serp-pos="0"), sans
+    garantie que ce soit la bonne page si le titre est ambigu.
+
+    Args:
+        title (str): Titre du film.
+        release_date (str): Date de sortie au format "YYYY-MM-DD".
+
+    Returns:
+        str: URL absolue de la page Wikipedia du film, ou None si la
+            requête échoue ou si aucun résultat n'est trouvé.
+    """
     search_url = get_wikipedia_url(title, release_date)
     response = safe_get(search_url, headers=WIKI_HEADERS)
 
     if response is None:
         return None
-    
+
     soup = BeautifulSoup(response.text, "html.parser")
     element = soup.find("a", {"data-serp-pos": "0"})
 
@@ -53,6 +84,17 @@ def scrape_wikipedia(title, release_date):
 
 
 def scrape_infobox(film_url):
+    """
+    Extrait le budget et le box-office depuis l'infobox d'une page Wikipedia.
+
+    Args:
+        film_url (str): URL de la page Wikipedia du film.
+
+    Returns:
+        dict: {"budget": str|None, "revenue": str|None}, ou None si la
+            requête échoue. Les valeurs sont du texte brut (non normalisé),
+            à nettoyer ensuite via clean_wiki_value.
+    """
     response = safe_get(film_url, headers=WIKI_HEADERS)
     result = {"budget": None, "revenue": None}
 
@@ -65,10 +107,11 @@ def scrape_infobox(film_url):
 
     if th_budget:
         td = th_budget.parent.find("td")
+        # Les <sup> contiennent des appels de note (ex. "[1]") à retirer
         for sup in td.find_all("sup"):
             sup.decompose()
         result["budget"] = td.text
-    if th_revenue: 
+    if th_revenue:
         td = th_revenue.parent.find("td")
         for sup in td.find_all("sup"):
             sup.decompose()
@@ -79,6 +122,22 @@ def scrape_infobox(film_url):
 # --------------------------------------------------------------------------------
 
 def enrich_from_wikipedia(raw_tmdb, force_refresh=False):
+    """
+    Complète le budget/revenu des films marqués "missing" par TMDB via Wikipedia.
+
+    Réutilise le fichier WIKI_RAW s'il existe déjà (sauf si force_refresh=True),
+    pour éviter de re-scraper Wikipedia à chaque exécution.
+
+    Args:
+        raw_tmdb (dict): Données brutes TMDB, doit contenir la clé "missing"
+            (liste de films avec id, title, release_date).
+        force_refresh (bool): Si True, ignore le cache et relance le scraping.
+            Défaut : False.
+
+    Returns:
+        list[dict]: Un dict par film enrichi, avec "id", "budget" et "revenue"
+            (valeurs nettoyées via clean_wiki_value, potentiellement None).
+    """
     if os.path.exists(WIKI_RAW) and not force_refresh:
         with open(WIKI_RAW, "r") as f:
             enriched_from_wiki = json.load(f)
