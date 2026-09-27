@@ -51,7 +51,7 @@ def safe_get(url, retries=3, headers=None, timeout=TIMEOUT):
             # Accès refusé : pas de retry possible, on laisse le bloc suivant
             # logguer l'erreur et retourner None
             pass
-        if err.response.status_code == 429:
+        elif err.response.status_code == 429:
             # Trop de requêtes : on attend la durée indiquée par l'API puis on
             # retente (en consommant une tentative), respectant Retry-After
             time_sleep = int(err.response.headers["Retry-After"]) + 1
