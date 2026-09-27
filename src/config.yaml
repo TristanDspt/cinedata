@@ -19,6 +19,5 @@ wikipedia:
   base_url: "https://en.wikipedia.org"  # utilisé pour construire les URLs de recherche/scraping
 
 database:
-  host: "localhost"
-  port: 5432
-  name: "mon_projet"
+  schema: "sql/schema.sql"
+  file: "data/db/cinedata.db"

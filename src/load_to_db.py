@@ -10,6 +10,7 @@ vote_count_ml) via la correspondance sur l'identifiant TMDB (tmdbId).
 
 import os
 import yaml
+import sqlite3
 
 # --------------------------------------------------------------------------------
 # Chargement de la configuration (chemins des fichiers de données brutes)
@@ -23,6 +24,8 @@ with open(config_path, "r") as f:
 
 TMDB_RAW = config["path"]["raw_tmdb"]
 WIKI_RAW = config["path"]["raw_wiki"]
+SCHEMA = config["database"]["schema"]
+DB = config["database"]["file"]
 
 # --------------------------------------------------------------------------------
 
@@ -63,7 +66,7 @@ def build_movie_dict(tmdb_data, df, wiki_data):
             "tagline": movie.get("tagline"),
             "director": ", ".join(movie.get("directors", [])),
             "casting": ", ".join(movie.get("casting", [])),
-            "release": movie.get("release_date"),
+            "release_date": movie.get("release_date"),
             "duration": movie.get("duration"),
             # TMDB en priorité ; "enriched" n'existe que pour les films dont le
             # budget/revenue était manquant côté TMDB (cf. raw_tmdb["missing"]
@@ -81,3 +84,38 @@ def build_movie_dict(tmdb_data, df, wiki_data):
         data.append(result)
 
     return data
+
+
+def init_db():
+    """Initialise la base de données SQLite en exécutant le script de schéma.
+
+    Se connecte au fichier de base défini par DB et exécute le contenu du
+    fichier SQL défini par SCHEMA (création des tables, etc.).
+    """
+    conn = sqlite3.connect(DB)
+    with open(SCHEMA, "r") as f:
+        conn.executescript(f.read())
+    conn.close()
+
+def load_to_db(data):
+    """Insère les films dans la table "movies" de la base de données.
+
+    Args:
+        data (list[dict]): Films à insérer, au format produit par
+            build_movie_dict (chaque clé du dictionnaire doit correspondre
+            à un paramètre nommé de la requête SQL, ex. "release_date",
+            "vote_average_tmdb").
+    """
+    conn = sqlite3.connect(DB)
+    sql = """
+        INSERT INTO movies VALUES (
+            :id, :title, :tagline, :director, :casting,
+            :release_date, :duration, :budget, :revenue, :genres,
+            :synopsis, :vote_average_tmdb, :vote_count_tmdb,
+            :vote_average_ml, :vote_count_ml
+        )
+    """
+    for movie in data:
+        conn.execute(sql, movie)
+    conn.commit()
+    conn.close()
