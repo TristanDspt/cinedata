@@ -3,3 +3,4 @@
 notebooks/
 __pycache__/
 docs/lessons/
+data/db/*.db
