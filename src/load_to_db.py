@@ -108,7 +108,7 @@ def load_to_db(data):
     """
     conn = sqlite3.connect(DB)
     sql = """
-        INSERT INTO movies VALUES (
+        INSERT OR REPLACE INTO movies VALUES (
             :id, :title, :tagline, :director, :casting,
             :release_date, :duration, :budget, :revenue, :genres,
             :synopsis, :vote_average_tmdb, :vote_count_tmdb,
