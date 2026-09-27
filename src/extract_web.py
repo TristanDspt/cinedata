@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import yaml
 import json
 
-from utils import safe_get
+from utils import safe_get, clean_wiki_value
 
 # --------------------------------------------------------------------------------
 
@@ -100,10 +100,17 @@ def enrich_from_wikipedia(raw_tmdb, force_refresh=False):
                 print(f"Unable to scrappe for {title}")
                 continue
 
+            budget = clean_wiki_value(result.get("budget"))
+            if budget is None:
+                print(f"{title} — budget ignored : unusable value")
+            revenue = clean_wiki_value(result.get("revenue"))
+            if revenue is None:
+                print(f"{title} — revenue ignored : unusable value")
+
             enriched = {
                 "id": movie.get("id"),
-                "budget": result.get("budget"),
-                "revenue": result.get("revenue"),
+                "budget": budget,
+                "revenue": revenue,
             }
 
             enriched_from_wiki.append(enriched)

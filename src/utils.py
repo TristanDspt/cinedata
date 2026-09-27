@@ -51,3 +51,18 @@ def safe_get(url, retries=3, headers=None, timeout=TIMEOUT):
     except requests.exceptions.RequestException as err:
         print(f"Unknown error : {err}")
     return None
+
+
+def clean_wiki_value(value):
+    if value is None:
+        return None
+    if "$" not in value:
+        return None
+    
+    value = value.replace("$", "").replace("\u00a0", " ")
+    value = value.strip().split()
+
+    if len(value) > 1 and value[1] == "million":
+        return float(value[0]) * 1_000_000
+    
+    return float(value[0])
