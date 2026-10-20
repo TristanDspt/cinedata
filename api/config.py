@@ -1,6 +1,7 @@
 # api/config.py
 
 from pathlib import Path
+import yaml
 
 # --------------------------------------------------------------------------------
 
@@ -31,3 +32,17 @@ def find_project_root() -> Path:
 
 PROJECT_ROOT = find_project_root()
 SQL_DIR = PROJECT_ROOT / "sql" / "api"
+
+
+def load_yaml(filepath: Path) -> dict:
+    """
+    Charge et retourne le contenu d'un fichier YAML.
+
+    Args:
+        filepath: Chemin du fichier YAML.
+
+    Returns:
+        Dictionnaire contenant les données du fichier.
+    """
+    with open(filepath, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
