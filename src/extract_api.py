@@ -160,9 +160,9 @@ def extract_tmdb(limit=5, force_refresh=False):
             # non renseigné ou pas assez fiable : le film est marqué "missing"
             # pour être complété plus tard via Wikipedia
             missing_fields = []
-            if not details.get("budget") or details.get("budget") < 100000:
+            if not details.get("budget") or details.get("budget") < 100_000:
                 missing_fields.append("budget")
-            if not details.get("revenue") or details.get("revenue") < 100000:
+            if not details.get("revenue") or details.get("revenue") < 100_000:
                 missing_fields.append("revenue")
 
             if missing_fields:
