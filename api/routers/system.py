@@ -1,4 +1,4 @@
-# routers/system.py
+# api/routers/system.py
 
 """
 Endpoints système : info et health.
