@@ -1,12 +1,12 @@
 # api/database.py
 
 from pathlib import Path
-from config import SQL_DIR
+from config import SQL_DIR, DATABASE
 import sqlite3
 
 # --------------------------------------------------------------------------------
 
-def execute_sql(filepath: Path, params) -> str:
+def execute_sql(filepath: Path, params=()) -> str:
     """
     Exécute le contenu d'un fichier .sql (dans sql/) avec les paramètres
     donnés, et retourne les résultats sous forme de liste de dicts.
@@ -22,7 +22,7 @@ def execute_sql(filepath: Path, params) -> str:
     with open(sql_file, "r", encoding="utf-8") as file:
         sql_request = file.read()
 
-    conn = sqlite3.connect(SQL_DIR)
+    conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
 
     try:
