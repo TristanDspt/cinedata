@@ -149,11 +149,7 @@ def enrich_from_wikipedia(raw_tmdb, force_refresh=False):
                 continue
 
             budget = clean_wiki_value(result.get("budget"))
-            if budget is None:
-                print(f"{title} — budget ignored : unusable value")
             revenue = clean_wiki_value(result.get("revenue"))
-            if revenue is None:
-                print(f"{title} — revenue ignored : unusable value")
 
             enriched = {
                 "id": movie.get("id"),
