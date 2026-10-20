@@ -11,6 +11,7 @@ introduction encore récente à la POO.
 
 from typing import Optional
 from pydantic import BaseModel
+from datetime import date
 
 
 # System
@@ -25,3 +26,18 @@ class HealthResponse(BaseModel):
     status: str
 
 # Movies
+
+class FilmResume(BaseModel):
+    id: int
+    title: str
+    release_date: Optional[date] = None
+
+class PaginationMeta(BaseModel):
+    page: int
+    per_pages: int
+    total: int
+    total_pages: int
+
+class MoviesListResponse(BaseModel):
+    pagination: PaginationMeta
+    results: list[FilmResume]
