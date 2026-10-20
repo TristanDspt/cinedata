@@ -24,11 +24,12 @@ def info():
     )
 
 
-@router.get("/health", response_model=HealthResponse, summary="État de santé de l'API")
+@router.get("/health", response_model=HealthResponse, summary="Health check")
 def health():
     """Vérifie que l'API répond et que la base de données est accessible."""
     try:
         execute_sql("movies_count.sql")
         return HealthResponse(status="ok")
-    except Exception:
+    except Exception as e:
+        print(f"[health] {type(e).__name__} : {e}")
         return HealthResponse(status="degraded")
