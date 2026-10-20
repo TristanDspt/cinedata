@@ -13,7 +13,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-# --- Système ---
+# System
 
 class InfoResponse(BaseModel):
     nom: str
@@ -23,3 +23,5 @@ class InfoResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str
+
+# Movies
