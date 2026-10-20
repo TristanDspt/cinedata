@@ -1,0 +1,25 @@
+# api/schemas.py
+
+"""
+Modèles Pydantic de l'API — définissent la forme des données en entrée/sortie
+et sont validés automatiquement par FastAPI.
+
+Approche volontairement simple : des classes à plat (attributs typés),
+pas d'héritage ni de validateurs personnalisés — cohérent avec une
+introduction encore récente à la POO.
+"""
+
+from typing import Optional
+from pydantic import BaseModel
+
+
+# --- Système ---
+
+class InfoResponse(BaseModel):
+    nom: str
+    version: str
+    description: str
+
+
+class HealthResponse(BaseModel):
+    status: str
