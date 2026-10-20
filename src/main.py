@@ -1,5 +1,6 @@
-"""main.py
+# src/main.py
 
+"""
 Point d'entrée du pipeline cinedata : orchestre l'extraction TMDB, MovieLens
 et Wikipedia, fusionne les données (voir load_to_db.build_movie_dict) puis
 exporte le résultat en CSV, prêt à être chargé en base de données.
@@ -26,13 +27,12 @@ EXPORT_TO_DB = config["path"]["export"]
 
 # --------------------------------------------------------------------------------
 
-if __name__ == "__main__":
-
+def main(limit, force_refresh):
     # Chaque étape réutilise son cache JSON/CSV existant (force_refresh=False)
     # tant que les fichiers dans data/raw/ ne sont pas supprimés
-    tmdb = extract_tmdb(limit=100, force_refresh=False)
+    tmdb = extract_tmdb(limit=limit, force_refresh=force_refresh)
     movie_lens = load_movielens(config)
-    tmdb_enriched = enrich_from_wikipedia(tmdb, force_refresh=False)
+    tmdb_enriched = enrich_from_wikipedia(tmdb, force_refresh=force_refresh)
 
     data = build_movie_dict(tmdb, movie_lens, tmdb_enriched)
 
@@ -40,3 +40,8 @@ if __name__ == "__main__":
 
     init_db()
     load_to_db(data)
+
+# --------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    main(1000, True)

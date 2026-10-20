@@ -1,5 +1,6 @@
-"""load_to_db.py
+# src/load_to_db.py
 
+"""
 Fusionne les données issues de TMDB, MovieLens (CSV) et Wikipedia en une
 liste de dictionnaires "films" prête à être chargée en base de données.
 

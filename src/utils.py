@@ -1,5 +1,6 @@
-"""utils.py
+# src/utils.py
 
+"""
 Fonctions utilitaires partagées par les modules d'extraction (extract_api,
 extract_web) : requêtes HTTP robustes (retry, timeout) et nettoyage des
 valeurs monétaires scrappées sur Wikipedia.

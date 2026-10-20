@@ -1,5 +1,6 @@
-"""web_extract.py
+# src/web_extract.py
 
+"""
 Enrichissement des films depuis Wikipedia : pour les films dont TMDB n'a pas
 fourni de budget/revenu fiable (voir extract_api.py, clé "missing"), on
 recherche la page Wikipedia correspondante et on en extrait ces valeurs

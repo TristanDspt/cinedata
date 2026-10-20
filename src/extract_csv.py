@@ -1,5 +1,6 @@
-"""extract_csv.py
+# src/extract_csv.py
 
+"""
 Extraction et préparation des données MovieLens (fichiers CSV ratings/links)
 en vue de leur fusion avec les données TMDB dans load_to_db.py.
 """

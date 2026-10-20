@@ -1,4 +1,5 @@
-# config.yaml
+# src/config.yaml
+
 # Configuration centrale du pipeline cinedata (extraction TMDB/Wikipedia/MovieLens,
 # chemins des fichiers de données et connexion base de données).
 

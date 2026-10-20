@@ -1,5 +1,6 @@
-"""extract_api.py
+# src/extract_api.py*
 
+"""
 Extraction des films depuis l'API TMDB : sélection des mieux notés, récupération
 des détails et du casting, puis sauvegarde en JSON (data/raw/tmdb.json).
 
