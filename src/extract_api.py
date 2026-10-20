@@ -10,25 +10,9 @@ ensuite via le scraping Wikipedia (voir extract_web.py).
 """
 
 import os
-from dotenv import load_dotenv
-import yaml
 import json
-
+from config import API_KEY, BASE_TMDB_URL, TMDB_RAW
 from utils import safe_get
-
-# --------------------------------------------------------------------------------
-
-load_dotenv()
-
-BASE_DIR = os.path.dirname(__file__)
-config_path = os.path.join(BASE_DIR, "config.yaml")
-
-with open(config_path, "r") as f:
-    config = yaml.safe_load(f)
-
-API_KEY = os.getenv("TMDB_API_KEY")
-BASE_URL = config["api_tmdb"]["base_url"]
-TMDB_RAW = config["path"]["raw_tmdb"]
 
 assert API_KEY, "Missing key : check .env file"
 
@@ -64,7 +48,7 @@ def get_top_movie(limit=5):
     # de films ayant un nombre de votes significatif (> 2000), avec une borne
     # de sécurité à 1000 pages pour éviter une boucle infinie
     while len(movies_filtered) < limit and page <= 1000:
-        url = f"{BASE_URL}/movie/top_rated?language=en-US&page={page}"
+        url = f"{BASE_TMDB_URL}/movie/top_rated?language=en-US&page={page}"
         response = safe_get(url, headers=get_headers())
 
         if response is None:
@@ -88,7 +72,7 @@ def get_movie_details(movie_id):
     Returns:
         dict: Détails du film, ou None en cas d'erreur.
     """
-    url = f"{BASE_URL}/movie/{movie_id}?language=en-US"
+    url = f"{BASE_TMDB_URL}/movie/{movie_id}?language=en-US"
     response = safe_get(url, headers=get_headers())
 
     if response is None:
@@ -108,7 +92,7 @@ def get_casting(movie_id, limit=5):
     Returns:
         tuple: (casting, directors) — deux listes de dicts, ou None en cas d'erreur.
     """
-    url = f"{BASE_URL}/movie/{movie_id}/credits?language=en-US"
+    url = f"{BASE_TMDB_URL}/movie/{movie_id}/credits?language=en-US"
     response = safe_get(url, headers=get_headers())
 
     if response is None:

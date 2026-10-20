@@ -9,24 +9,9 @@ TMDB ne les fournit pas, et MovieLens complète les notes/votes (vote_average_ml
 vote_count_ml) via la correspondance sur l'identifiant TMDB (tmdbId).
 """
 
-import os
-import yaml
 import sqlite3
 
-# --------------------------------------------------------------------------------
-# Chargement de la configuration (chemins des fichiers de données brutes)
-# --------------------------------------------------------------------------------
-
-BASE_DIR = os.path.dirname(__file__)
-config_path = os.path.join(BASE_DIR, "config.yaml")
-
-with open(config_path, "r") as f:
-    config = yaml.safe_load(f)
-
-TMDB_RAW = config["path"]["raw_tmdb"]
-WIKI_RAW = config["path"]["raw_wiki"]
-SCHEMA = config["database"]["schema"]
-DB = config["database"]["file"]
+from config import SCHEMA, DATABASE
 
 # --------------------------------------------------------------------------------
 
@@ -93,7 +78,7 @@ def init_db():
     Se connecte au fichier de base défini par DB et exécute le contenu du
     fichier SQL défini par SCHEMA (création des tables, etc.).
     """
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(DATABASE)
     with open(SCHEMA, "r") as f:
         conn.executescript(f.read())
     conn.close()
@@ -107,7 +92,7 @@ def load_to_db(data):
             à un paramètre nommé de la requête SQL, ex. "release_date",
             "vote_average_tmdb").
     """
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(DATABASE)
     sql = """
         INSERT OR REPLACE INTO movies VALUES (
             :id, :title, :tagline, :director, :casting,

@@ -7,25 +7,12 @@ recherche la page Wikipedia correspondante et on en extrait ces valeurs
 depuis l'infobox, avant sauvegarde en JSON (data/raw/wiki.json).
 """
 
-import os
 from bs4 import BeautifulSoup
-import yaml
 import json
 
 from utils import safe_get, clean_wiki_value
+from config import BASE_WIKI_URL, WIKI_RAW, WIKI_HEADERS
 
-# --------------------------------------------------------------------------------
-
-BASE_DIR = os.path.dirname(__file__)
-config_path = os.path.join(BASE_DIR, "config.yaml")
-
-with open(config_path, "r") as f:
-    config = yaml.safe_load(f)
-
-BASE_URL = config["wikipedia"]["base_url"]
-WIKI_RAW = config["path"]["raw_wiki"]
-
-WIKI_HEADERS = {"User-Agent": "CineDataBot/1.0 (educational project; student@cinedata.edu)"}
 
 # --------------------------------------------------------------------------------
 
@@ -44,7 +31,7 @@ def get_wikipedia_url(title, release_date):
     release_year = release_date[:4]
     clean_title = title.replace(" ", "+")
 
-    url = f"{BASE_URL}/w/index.php?search=movie+{clean_title}+{release_year}&title=Special:Search"
+    url = f"{BASE_WIKI_URL}/w/index.php?search=movie+{clean_title}+{release_year}&title=Special:Search"
 
     return url
 
@@ -76,7 +63,7 @@ def scrape_wikipedia(title, release_date):
     if element:
         film_url = element["href"].split("?")[0]
         if film_url.startswith("/"):
-            film_url = BASE_URL + film_url
+            film_url = BASE_WIKI_URL + film_url
     else:
         print(f"Unable to generate a URL for {title}")
         return None

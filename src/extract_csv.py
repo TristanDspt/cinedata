@@ -6,10 +6,11 @@ en vue de leur fusion avec les données TMDB dans load_to_db.py.
 """
 
 import pandas as pd
+from config import config
 
 # --------------------------------------------------------------------------------
 
-def load_movielens(config):
+def load_movielens() -> pd.DataFrame:
     """
     Charge et prépare les données MovieLens (ratings + links).
 

@@ -6,24 +6,14 @@ et Wikipedia, fusionne les données (voir load_to_db.build_movie_dict) puis
 exporte le résultat en CSV, prêt à être chargé en base de données.
 """
 
-import os
 import pandas as pd
-import yaml
 
 from extract_api import extract_tmdb
 from extract_csv import load_movielens
 from extract_web import enrich_from_wikipedia
 from load_to_db import build_movie_dict, init_db, load_to_db
 
-# --------------------------------------------------------------------------------
-
-BASE_DIR = os.path.dirname(__file__)
-config_path = os.path.join(BASE_DIR, "config.yaml")
-
-with open(config_path, "r") as f:
-    config = yaml.safe_load(f)
-
-EXPORT_TO_DB = config["path"]["export"]
+from config import EXPORT_TO_DB
 
 # --------------------------------------------------------------------------------
 
@@ -31,7 +21,7 @@ def main(limit, force_refresh):
     # Chaque étape réutilise son cache JSON/CSV existant (force_refresh=False)
     # tant que les fichiers dans data/raw/ ne sont pas supprimés
     tmdb = extract_tmdb(limit=limit, force_refresh=force_refresh)
-    movie_lens = load_movielens(config)
+    movie_lens = load_movielens()
     tmdb_enriched = enrich_from_wikipedia(tmdb, force_refresh=force_refresh)
 
     data = build_movie_dict(tmdb, movie_lens, tmdb_enriched)
