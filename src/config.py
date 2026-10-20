@@ -63,7 +63,10 @@ BASE_WIKI_URL = config["wikipedia"]["base_url"]
 WIKI_RAW = config["path"]["raw_wiki"]
 WIKI_HEADERS = {"User-Agent": "CineDataBot/1.0 (educational project; student@cinedata.edu)"}
 
+MIN_RELIABLE = config["data_quality"]["min_reliable"]
 SCHEMA = config["database"]["schema"]
 DATABASE = config["database"]["file"]
 
 EXPORT_TO_DB = config["path"]["export"]
+DB_ENTRY = config["pipeline"]["db_entry"]
+FORCE_REFRESH = config["pipeline"]["force_refresh"]

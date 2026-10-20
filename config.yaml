@@ -19,6 +19,13 @@ path:
 wikipedia:
   base_url: "https://en.wikipedia.org"  # utilisé pour construire les URLs de recherche/scraping
 
+data_quality:
+  min_reliable: 100_000   # montant minimum (en $) pour qu'un budget/revenu TMDB soit jugé fiable
+
 database:
   schema: "sql/schema.sql"
   file: "data/db/cinedata.db"
+
+pipeline:
+  db_entry: 1000          # nombre d'entrée souhaité dans la DB
+  force_refresh: true     # force le rafraichissement du pipeline (true), false utilise les CSV si dispo
