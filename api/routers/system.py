@@ -7,7 +7,7 @@ Endpoints système : info et health.
 from fastapi import APIRouter
 
 from schemas import InfoResponse, HealthResponse
-from database import executer_fichier_sql
+from database import execute_sql
 
 # --------------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ def info():
 def health():
     """Vérifie que l'API répond et que la base de données est accessible."""
     try:
-        executer_fichier_sql("movies_count.sql")
+        execute_sql("movies_count.sql")
         return HealthResponse(status="ok")
     except Exception:
         return HealthResponse(status="degraded")
