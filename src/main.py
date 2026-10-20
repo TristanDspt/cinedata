@@ -13,14 +13,14 @@ from extract_csv import load_movielens
 from extract_web import enrich_from_wikipedia
 from load_to_db import build_movie_dict, init_db, load_to_db
 
-from config import EXPORT_TO_DB
+from config import EXPORT_TO_DB, DB_ENTRY, FORCE_REFRESH
 
 # --------------------------------------------------------------------------------
 
 def main(limit, force_refresh):
     # Chaque étape réutilise son cache JSON/CSV existant (force_refresh=False)
     # tant que les fichiers dans data/raw/ ne sont pas supprimés
-    tmdb = extract_tmdb(limit=limit, force_refresh=force_refresh)
+    tmdb = extract_tmdb(limit=limit, force_refresh=False)
     movie_lens = load_movielens()
     tmdb_enriched = enrich_from_wikipedia(tmdb, force_refresh=force_refresh)
 
@@ -34,4 +34,4 @@ def main(limit, force_refresh):
 # --------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    main(1000, True)
+    main(DB_ENTRY, FORCE_REFRESH)

@@ -11,9 +11,16 @@ vote_count_ml) via la correspondance sur l'identifiant TMDB (tmdbId).
 
 import sqlite3
 
-from config import SCHEMA, DATABASE
+from config import MIN_RELIABLE, SCHEMA, DATABASE
 
 # --------------------------------------------------------------------------------
+
+def pick(tmdb_value, wiki_value, min_reliable):
+    """TMDB s'il est fiable, sinon Wikipedia."""
+    if tmdb_value and tmdb_value >= min_reliable:
+        return tmdb_value
+    return wiki_value
+
 
 def build_movie_dict(tmdb_data, df, wiki_data):
     """Construit la liste des films enrichis à partir des trois sources de données.
@@ -44,7 +51,7 @@ def build_movie_dict(tmdb_data, df, wiki_data):
     for movie in top_movies:
         movie_id = movie["id"]
         ml_data = df.query("tmdbId == @movie_id")
-        enriched = enriched_by_id.get(movie_id)
+        enriched = enriched_by_id.get(movie_id, {})
 
         result = {
             "id": movie.get("id"),
@@ -57,8 +64,8 @@ def build_movie_dict(tmdb_data, df, wiki_data):
             # TMDB en priorité ; "enriched" n'existe que pour les films dont le
             # budget/revenue était manquant côté TMDB (cf. raw_tmdb["missing"]
             # dans extract_web.py), on utilise alors la valeur Wikipedia
-            "budget": enriched.get("budget") if enriched is not None else movie.get("budget"),
-            "revenue": enriched.get("revenue") if enriched is not None else movie.get("revenue"),
+            "budget": pick(movie.get("budget"), enriched.get("budget"), MIN_RELIABLE),
+            "revenue": pick(movie.get("revenue"), enriched.get("revenue"), MIN_RELIABLE),
             "genres": ", ".join(movie.get("genres", [])),
             "synopsis": movie.get("synopsis"),
             "vote_average_tmdb": movie.get("vote_average_tmdb"),
@@ -82,6 +89,7 @@ def init_db():
     with open(SCHEMA, "r") as f:
         conn.executescript(f.read())
     conn.close()
+
 
 def load_to_db(data):
     """Insère les films dans la table "movies" de la base de données.

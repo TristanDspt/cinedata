@@ -54,24 +54,29 @@ def safe_get(url, retries=3, headers=None, timeout=TIMEOUT):
     return None
 
 
-def clean_wiki_value(value):
+def clean_wiki_value(value: str) -> float:
     """
     Normalise une valeur monétaire brute extraite d'une infobox Wikipedia.
 
-    Ne traite que les montants en dollars (préfixés par "$") ; toute autre
-    valeur (absente, dans une autre devise, format inattendu...) est ignorée.
+    Ne traite que les montants en dollars (préfixés par "$"). Formats gérés :
+    "$X", "$X thousand", "$X million", "$X billion" (casse indifférente),
+    avec ou sans séparateur de milliers (ex. "$250,000", "$1.5 million").
 
-    Attention : les nombres avec séparateur de milliers (virgule, ex.
-    "$120,000,000") ne sont pas gérés et provoqueront une ValueError sur
-    float(). Seuls les formats "$X" et "$X million" sont supportés.
+    Une valeur absente ou sans "$" (autre devise, texte libre) est ignorée
+    silencieusement. Une valeur avec "$" mais illisible (fourchette comme
+    "$10–15 million", unité inconnue comme "$5 bananas", montant manquant...)
+    est ignorée aussi, mais un message est affiché pour pouvoir la repérer.
 
     Args:
-        value (str): Texte brut de l'infobox (ex. "$1.5 million", "$500000").
+        value (str | None): Texte brut de l'infobox (ex. "$1.5 million",
+            "$250,000").
 
     Returns:
-        float: Montant en dollars, ou None si la valeur est absente ou
-            n'est pas exprimée en dollars.
+        float | None: Montant en dollars, ou None si la valeur est absente,
+            n'est pas exprimée en dollars ou n'a pas pu être interprétée.
     """
+    raw_value = value
+
     if value is None:
         return None
     if "$" not in value:
@@ -79,10 +84,27 @@ def clean_wiki_value(value):
 
     # \u00a0 : espace ins\écable parfois utilis\ée par Wikipedia entre le chiffre
     # et l'unit\é (ex. "million")
-    value = value.replace("$", "").replace("\u00a0", " ")
+    value = value.replace("$", "").replace("\u00a0", " ").replace(",", "")
     value = value.strip().split()
 
-    if len(value) > 1 and value[1] == "million":
-        return float(value[0]) * 1_000_000
+    conversion = {
+        "thousand": 1_000,
+        "million": 1_000_000,
+        "billion": 1_000_000_000
+    }
 
-    return float(value[0])
+    try:
+        if len(value) > 1 and value[1].lower() in conversion:
+            return float(value[0]) * conversion[value[1].lower()]
+        elif len(value) > 1 and value[1].lower() not in conversion:
+            print(f"Unknown word in value : {raw_value}")
+            return None
+        return float(value[0])
+    
+    except Exception as e:
+        print(f"{raw_value} | {type(e).__name__} : {e}")
+        return None
+
+if __name__ == "__main__":
+    print(clean_wiki_value("$5 bananas"))
+    print(clean_wiki_value("$250 thousand"))
