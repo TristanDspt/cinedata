@@ -19,9 +19,8 @@ from routers import system, movies
 
 TAGS_METADATA = [
     {"name": "Système", "description": "État de l'API et informations générales."},
-    {"name": "Films", "description": "Liste et détail des films du catalogue."},
-    {"name": "Classements", "description": "Top 10 acteurs, réalisateurs, revenus et budgets."},
-    {"name": "Recommandation", "description": "Films similaires à un film donné (similarité de contenu)."},
+    {"name": "Movies", "description": "Liste et détail des films du catalogue."},
+    {"name": "Rankings", "description": "Top 10 acteurs, réalisateurs, revenus et budgets."},
 ]
 
 def main():
