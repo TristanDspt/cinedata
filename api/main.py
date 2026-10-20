@@ -13,7 +13,7 @@ Documentation Swagger : http://127.0.0.1:8000/docs
 """
 
 from fastapi import FastAPI
-from routers import system, movies
+from routers import system
 
 # --------------------------------------------------------------------------------
 
@@ -23,17 +23,11 @@ TAGS_METADATA = [
     {"name": "Rankings", "description": "Top 10 acteurs, réalisateurs, revenus et budgets."},
 ]
 
-def main():
-    app = FastAPI(
+app = FastAPI(
     title="CinéData API",
-    description="API d'exposition des données du projet CinéData (Bloc 1 — Dev IA).",
+    description="API d'exposition des données du projet CinéData.",
     version="1.0.0",
     openapi_tags=TAGS_METADATA,
 )
-    app.include_router(system.router)
-    app.include_router(movies.router)
 
-# --------------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    main()
+app.include_router(system.router)
