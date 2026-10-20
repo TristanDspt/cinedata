@@ -1,7 +1,7 @@
 # api/database.py
 
 from pathlib import Path
-from config import SQL_DIR, DATABASE
+from config import PROJECT_ROOT, SQL_DIR, DATABASE
 import sqlite3
 
 # --------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ def execute_sql(filepath: Path, params=()) -> str:
     with open(sql_file, "r", encoding="utf-8") as file:
         sql_request = file.read()
 
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(PROJECT_ROOT / DATABASE)
     conn.row_factory = sqlite3.Row
 
     try:
