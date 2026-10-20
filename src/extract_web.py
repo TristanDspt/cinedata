@@ -7,6 +7,7 @@ recherche la page Wikipedia correspondante et on en extrait ces valeurs
 depuis l'infobox, avant sauvegarde en JSON (data/raw/wiki.json).
 """
 
+import os
 from bs4 import BeautifulSoup
 import json
 
