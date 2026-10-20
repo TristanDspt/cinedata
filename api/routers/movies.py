@@ -34,5 +34,5 @@ def liste_films(page: int = Query(1, ge=1, description="Page number, start from 
             result=[FilmResume(**line) for line in result]
         )
     except Exception as e:
-        return print(f"[health] {type(e).__name__} : {e}")
+        return print(f"[movies] {type(e).__name__} : {e}")
 

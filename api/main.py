@@ -13,7 +13,7 @@ Documentation Swagger : http://127.0.0.1:8000/docs
 """
 
 from fastapi import FastAPI
-from routers import system
+from routers import system, movies
 
 # --------------------------------------------------------------------------------
 
@@ -31,3 +31,4 @@ app = FastAPI(
 )
 
 app.include_router(system.router)
+app.include_router(movies.router)
