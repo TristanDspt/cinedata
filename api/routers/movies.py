@@ -8,8 +8,9 @@ import math
 
 from fastapi import APIRouter, HTTPException, Query
 
-from schemas import FilmResume, MoviesListResponse, PaginationMeta
+from schemas import FilmResume, MoviesListResponse, PaginationMeta, MovieDetail
 from database import execute_sql
+from utils import split_list
 
 router = APIRouter(tags=["Movies"])
 
@@ -34,5 +35,26 @@ def liste_films(page: int = Query(1, ge=1, description="Page number, start from 
             result=[FilmResume(**line) for line in result]
         )
     except Exception as e:
-        return print(f"[movies] {type(e).__name__} : {e}")
+        print(f"[movies] {type(e).__name__} : {e}")
+        raise HTTPException(status_code=500, detail="Internal Error")
 
+
+@router.get("/movie/{movie_id}", response_model=MovieDetail, summary="Movie detail")
+def movie_detail(movie_id: int):
+    """
+    Retourne toutes les informations disponibles pour un film : ses champs
+    de base, ses genres, son équipe (réalisateur(s)/acteurs) et ses tags.
+    """
+    try:
+        movie = execute_sql("movie_detail.sql", (movie_id,))
+        film = movie[0]
+        film["director"] = split_list(film["director"])
+        film["genres"] = split_list(film["genres"])
+        film["casting"] = split_list(film["casting"])
+        if not movie:
+            raise HTTPException(status_code=404, detail=f"Movie {movie_id} not found.")
+        return MovieDetail(**film)
+    
+    except Exception as e:
+        print(f"[movies] {type(e).__name__} : {e}")
+        raise HTTPException(status_code=500, detail="Internal Error")

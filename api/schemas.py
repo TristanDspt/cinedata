@@ -40,4 +40,21 @@ class PaginationMeta(BaseModel):
 
 class MoviesListResponse(BaseModel):
     pagination: PaginationMeta
-    results: list[FilmResume]
+    result: list[FilmResume]
+
+class MovieDetail(BaseModel):
+    id: int
+    title: str
+    tagline: str
+    director: list[str]
+    casting: list[str]
+    release_date: str
+    duration: int
+    budget: int
+    revenue: int
+    genres: list[str]
+    synopsis: str
+    vote_average_tmdb: float
+    vote_count_tmdb: int
+    vote_average_ml: float
+    vote_count_ml: int
