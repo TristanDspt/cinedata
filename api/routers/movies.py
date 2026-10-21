@@ -50,6 +50,7 @@ def movie_detail(movie_id: int):
         
         if not movie:
             raise HTTPException(status_code=404, detail=f"Movie {movie_id} not found.")
+        
         film = movie[0]
 
         film["director"] = split_list(film["director"])
@@ -58,6 +59,8 @@ def movie_detail(movie_id: int):
 
         return MovieDetail(**film)
     
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"[movies] {type(e).__name__} : {e}")
         raise HTTPException(status_code=500, detail="Internal Error")
