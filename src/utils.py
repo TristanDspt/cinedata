@@ -54,7 +54,7 @@ def safe_get(url, retries=3, headers=None, timeout=TIMEOUT):
     return None
 
 
-def clean_wiki_value(value: str) -> float:
+def clean_wiki_value(value: str) -> int:
     """
     Normalise une valeur monétaire brute extraite d'une infobox Wikipedia.
 
@@ -72,7 +72,7 @@ def clean_wiki_value(value: str) -> float:
             "$250,000").
 
     Returns:
-        float | None: Montant en dollars, ou None si la valeur est absente,
+        int | None: Montant en dollars, ou None si la valeur est absente,
             n'est pas exprimée en dollars ou n'a pas pu être interprétée.
     """
     raw_value = value
@@ -80,6 +80,7 @@ def clean_wiki_value(value: str) -> float:
     if value is None:
         return None
     if "$" not in value:
+        print(f"No $ sign in value : {raw_value}")
         return None
 
     # \u00a0 : espace ins\écable parfois utilis\ée par Wikipedia entre le chiffre
@@ -95,16 +96,16 @@ def clean_wiki_value(value: str) -> float:
 
     try:
         if len(value) > 1 and value[1].lower() in conversion:
-            return float(value[0]) * conversion[value[1].lower()]
+            return int(round(float(value[0]) * conversion[value[1].lower()], 0))
         elif len(value) > 1 and value[1].lower() not in conversion:
             print(f"Unknown word in value : {raw_value}")
             return None
-        return float(value[0])
+        return int(value[0])
     
     except Exception as e:
         print(f"{raw_value} | {type(e).__name__} : {e}")
         return None
 
 if __name__ == "__main__":
-    print(clean_wiki_value("$5 bananas"))
+    print(clean_wiki_value("$16.4 million"))
     print(clean_wiki_value("$250 thousand"))
