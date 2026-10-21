@@ -47,12 +47,15 @@ def movie_detail(movie_id: int):
     """
     try:
         movie = execute_sql("movie_detail.sql", (movie_id,))
+        
+        if not movie:
+            raise HTTPException(status_code=404, detail=f"Movie {movie_id} not found.")
         film = movie[0]
+
         film["director"] = split_list(film["director"])
         film["genres"] = split_list(film["genres"])
         film["casting"] = split_list(film["casting"])
-        if not movie:
-            raise HTTPException(status_code=404, detail=f"Movie {movie_id} not found.")
+
         return MovieDetail(**film)
     
     except Exception as e:
