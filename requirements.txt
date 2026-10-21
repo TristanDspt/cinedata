@@ -3,19 +3,26 @@
 # pip install -r requirements.txt
 # python -m ipykernel install --user --name=cinedata --display-name "Python (cinedata)"
 
-# --- Extraction (J1-J3) ---
+# --- Extraction ---
 requests
 python-dotenv
 beautifulsoup4
 
-# --- Exploration / notebook (proche de vos habitudes Data Analyst) ---
+# --- Exploration / notebook ---
 pandas
 jupyterlab
 
 
-# --- Base de données (J3-J4) ---
+# --- Base de données ---
 sqlalchemy
 
-# --- API (J4-J5) ---
+# --- API ---
 fastapi
 uvicorn
+
+# --- ML ---
+scikit-learn
+joblib
+
+# --- Généraliste ---
+pyyaml
