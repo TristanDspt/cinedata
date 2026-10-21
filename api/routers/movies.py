@@ -53,7 +53,7 @@ def movie_detail(movie_id: int):
         
         film = movie[0]
 
-        film["director"] = split_list(film["director"])
+        film["directors"] = split_list(film["directors"])
         film["genres"] = split_list(film["genres"])
         film["casting"] = split_list(film["casting"])
 

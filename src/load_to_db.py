@@ -57,7 +57,7 @@ def build_movie_dict(tmdb_data, df, wiki_data):
             "id": movie.get("id"),
             "title": movie.get("title"),
             "tagline": movie.get("tagline"),
-            "director": ", ".join(movie.get("directors", [])),
+            "directors": ", ".join(movie.get("directors", [])),
             "casting": ", ".join(movie.get("casting", [])),
             "release_date": movie.get("release_date"),
             "duration": movie.get("duration"),
@@ -103,7 +103,7 @@ def load_to_db(data):
     conn = sqlite3.connect(DATABASE)
     sql = """
         INSERT OR REPLACE INTO movies VALUES (
-            :id, :title, :tagline, :director, :casting,
+            :id, :title, :tagline, :directors, :casting,
             :release_date, :duration, :budget, :revenue, :genres,
             :synopsis, :vote_average_tmdb, :vote_count_tmdb,
             :vote_average_ml, :vote_count_ml

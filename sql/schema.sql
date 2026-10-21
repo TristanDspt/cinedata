@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS movies (
     id                INTEGER PRIMARY KEY,
     title             TEXT,
     tagline           TEXT,
-    director          TEXT,
+    directors         TEXT,
     casting           TEXT,
     release_date      TEXT,
     duration          INTEGER,
