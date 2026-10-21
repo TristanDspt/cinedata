@@ -11,10 +11,10 @@ from database import execute_sql
 
 # --------------------------------------------------------------------------------
 
-router = APIRouter(tags=["Système"])
+router = APIRouter(tags=["System"])
 
 
-@router.get("/info", response_model=InfoResponse, summary="Informations sur l'API")
+@router.get("/info", response_model=InfoResponse, summary="API Infos")
 def info():
     """Renvoie le nom, la version et une description de l'API."""
     return InfoResponse(

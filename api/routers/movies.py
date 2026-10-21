@@ -18,7 +18,7 @@ PER_PAGES = 10
 
 # --------------------------------------------------------------------------------
 
-@router.get("/movie/", response_model=MoviesListResponse, summary="Movies List")
+@router.get("/movies/", response_model=MoviesListResponse, summary="Movies List")
 def liste_films(page: int = Query(1, ge=1, description="Page number, start from 1")):
     """
     Retourne les films par pages de 10 (id, titre, année de sortie).
@@ -39,7 +39,7 @@ def liste_films(page: int = Query(1, ge=1, description="Page number, start from 
         raise HTTPException(status_code=500, detail="Internal Error")
 
 
-@router.get("/movie/{movie_id}", response_model=MovieDetail, summary="Movie detail")
+@router.get("/movies/{movie_id}", response_model=MovieDetail, summary="Movie detail")
 def movie_detail(movie_id: int):
     """
     Retourne toutes les informations disponibles pour un film : ses champs
