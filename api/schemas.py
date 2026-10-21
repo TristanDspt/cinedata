@@ -45,16 +45,16 @@ class MoviesListResponse(BaseModel):
 class MovieDetail(BaseModel):
     id: int
     title: str
-    tagline: str
+    tagline: Optional[str] = None
     director: list[str]
     casting: list[str]
     release_date: str
     duration: int
-    budget: int
-    revenue: int
+    budget: Optional[int] = None
+    revenue: Optional[int] = None
     genres: list[str]
-    synopsis: str
-    vote_average_tmdb: float
-    vote_count_tmdb: int
-    vote_average_ml: float
-    vote_count_ml: int
+    synopsis: Optional[str] = None
+    vote_average_tmdb: Optional[float] = None
+    vote_count_tmdb: Optional[int] = None
+    vote_average_ml: Optional[float] = None
+    vote_count_ml: Optional[int] = None
