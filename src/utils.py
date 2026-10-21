@@ -84,7 +84,7 @@ def clean_wiki_value(value: str) -> float:
 
     # \u00a0 : espace ins\écable parfois utilis\ée par Wikipedia entre le chiffre
     # et l'unit\é (ex. "million")
-    value = value.replace("$", "").replace("\u00a0", " ").replace(",", "")
+    value = value.replace("US$", "").replace("$", "").replace("\u00a0", " ").replace(",", "")
     value = value.strip().split()
 
     conversion = {
