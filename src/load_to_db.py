@@ -69,9 +69,9 @@ def build_movie_dict(tmdb_data, df, wiki_data):
             "genres": ", ".join(movie.get("genres", [])),
             "synopsis": movie.get("synopsis"),
             "vote_average_tmdb": movie.get("vote_average_tmdb"),
-            "vote_count_tmdb": movie.get("vote_count_tmdb"),
+            "vote_count_tmdb": int(movie.get("vote_count_tmdb")),
             "vote_average_ml": ml_data["vote_average_ml"].iloc[0] if not ml_data.empty else None,
-            "vote_count_ml": ml_data["vote_count_ml"].iloc[0] if not ml_data.empty else None
+            "vote_count_ml": int(ml_data["vote_count_ml"].iloc[0]) if not ml_data.empty else None
         }
 
         data.append(result)
