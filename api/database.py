@@ -1,6 +1,5 @@
 # api/database.py
 
-from pathlib import Path
 from config import PROJECT_ROOT, SQL_API_DIR, DATABASE
 import sqlite3
 
