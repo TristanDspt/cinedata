@@ -58,3 +58,22 @@ class MovieDetail(BaseModel):
     vote_count_tmdb: Optional[int] = None
     vote_average_ml: Optional[float] = None
     vote_count_ml: Optional[int] = None
+
+# Recommendation
+
+class RecommendedMovie(BaseModel):
+    id: int
+    title: str
+    genres: list[str]
+    duration: int
+    release_date: str
+    casting: list[str]
+    directors: list[str]
+    budget: Optional[int] = None
+    vote_average_tmdb: Optional[float] = None
+    vote_average_ml: Optional[float] = None
+    score: float
+
+class RecommendationResponse(BaseModel):
+    movie_id: int
+    recommendations: list[RecommendedMovie]
