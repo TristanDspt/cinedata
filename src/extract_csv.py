@@ -6,23 +6,19 @@ en vue de leur fusion avec les données TMDB dans load_to_db.py.
 """
 
 import pandas as pd
-from config import config
+from config import ML_RATINGS, ML_LINKS
 
 # --------------------------------------------------------------------------------
 
 def load_movielens() -> pd.DataFrame:
     """
     Charge et prépare les données MovieLens (ratings + links).
-
-    Args:
-        config (dict): Configuration chargée depuis config.yaml,
-                       doit contenir config["path"]["ml_ratings"] et config["path"]["ml_links"].
-
+    
     Returns:
         DataFrame: Colonnes tmdbId, vote_average_ml, vote_count_ml.
     """
-    df_links = pd.read_csv(config["path"]["ml_links"])
-    df_ratings = pd.read_csv(config["path"]["ml_ratings"])
+    df_links = pd.read_csv(ML_LINKS)
+    df_ratings = pd.read_csv(ML_RATINGS)
 
     # Agrège les notes individuelles par film : moyenne et nombre de votes
     df_ratings = df_ratings.groupby(["movieId"]).agg({"rating": ["mean", "count"]}).reset_index().copy()
