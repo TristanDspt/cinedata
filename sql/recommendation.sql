@@ -2,10 +2,18 @@
 
 SELECT
 	id,
+	title,
 	tagline,
 	directors,
 	casting,
+	release_date,
+	duration,
+	budget,
 	genres,
-	synopsis
+	synopsis,
+	vote_average_tmdb,
+	vote_count_tmdb,
+	vote_average_ml,
+	vote_count_ml
 FROM 
 	movies
