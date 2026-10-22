@@ -1,7 +1,7 @@
 # api/database.py
 
 from pathlib import Path
-from config import PROJECT_ROOT, SQL_DIR, DATABASE
+from config import PROJECT_ROOT, SQL_API_DIR, DATABASE
 import sqlite3
 
 # --------------------------------------------------------------------------------
@@ -18,7 +18,7 @@ def execute_sql(filename: str, params=()) -> list[dict]:
     Retourne :
         list[dict] : une entrée par ligne de résultat
     """
-    sql_file = SQL_DIR / filename
+    sql_file = SQL_API_DIR / filename
     with open(sql_file, "r", encoding="utf-8") as file:
         sql_request = file.read()
 

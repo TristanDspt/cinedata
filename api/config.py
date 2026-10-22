@@ -31,7 +31,7 @@ def find_project_root() -> Path:
     raise FileNotFoundError("requirements.txt introuvable")
 
 PROJECT_ROOT = find_project_root()
-SQL_DIR = PROJECT_ROOT / "sql" / "api"
+SQL_API_DIR = PROJECT_ROOT / "sql" / "api"
 
 
 def load_yaml(filepath: Path) -> dict:
