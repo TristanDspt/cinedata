@@ -37,6 +37,7 @@ def find_project_root() -> Path:
     raise FileNotFoundError("requirements.txt introuvable")
 
 PROJECT_ROOT = find_project_root()
+SQL_DIR = PROJECT_ROOT / "sql" / "api"
 
 
 def load_yaml(filepath: Path) -> dict:
@@ -72,7 +73,7 @@ SCHEMA = config["database"]["schema"]
 DATABASE = config["database"]["db_file"]
 
 # precompute_recommendation.py
-SQL_FILE = config["recommendation"]["sql_file"]
+SQL_RECOMMENDATION = config["recommendation"]["sql_file"]
 ARTEFACT = config["recommendation"]["artefact_path"]
 
 # main.py
