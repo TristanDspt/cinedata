@@ -24,8 +24,13 @@ data_quality:
 
 database:
   schema: "sql/schema.sql"
-  file: "data/db/cinedata.db"
+  db_file: "data/db/cinedata.db"
 
 pipeline:
   db_entry: 1000           # nombre d'entrée souhaité dans la DB
   force_refresh: false     # force le rafraichissement du pipeline (true), false utilise les CSV si dispo
+
+recommendation:
+  sql_file: recommendation.sql
+  top_n: 5
+  artefact_path: data/models/recommendation.joblib
