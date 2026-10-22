@@ -48,4 +48,4 @@ def load_yaml(filepath: Path) -> dict:
         return yaml.safe_load(f) or {}
 
 config = load_yaml(PROJECT_ROOT / "config.yaml")
-DATABASE = config["database"]["file"]
+DATABASE = config["database"]["db_file"]

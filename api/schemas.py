@@ -46,7 +46,7 @@ class MovieDetail(BaseModel):
     id: int
     title: str
     tagline: Optional[str] = None
-    director: list[str]
+    directors: list[str]
     casting: list[str]
     release_date: str
     duration: int
