@@ -50,3 +50,4 @@ def load_yaml(filepath: Path) -> dict:
 config = load_yaml(PROJECT_ROOT / "config.yaml")
 DATABASE = config["database"]["db_file"]
 TOP_N = config["recommendation"]["top_n"]
+ARTEFACT = config["recommendation"]["artefact_path"]
