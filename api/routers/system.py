@@ -20,7 +20,7 @@ def info():
     return InfoResponse(
         nom="CinéData API",
         version="1.0.0",
-        description="API d'exposition des données du projet CinéData (films, genres, équipe, classements).",
+        description="API d'exposition des données du projet CinéData (films, genres, casting, recommandations).",
     )
 
 

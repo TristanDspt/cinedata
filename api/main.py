@@ -18,7 +18,7 @@ from routers import system, movies, recommendation
 # --------------------------------------------------------------------------------
 
 TAGS_METADATA = [
-    {"name": "Système", "description": "État de l'API et informations générales."},
+    {"name": "System", "description": "État de l'API et informations générales."},
     {"name": "Movies", "description": "Liste et détail des films du catalogue."},
     {"name": "Recommendation", "description": "Films proches d'un film donné, calculés par similarité de contenu (genres, réalisateurs, casting, slogan, synopsis)."},
 ]

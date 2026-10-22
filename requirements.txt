@@ -12,10 +12,6 @@ beautifulsoup4
 pandas
 jupyterlab
 
-
-# --- Base de données ---
-sqlalchemy
-
 # --- API ---
 fastapi
 uvicorn
