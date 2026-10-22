@@ -6,7 +6,7 @@ import sqlite3
 
 # --------------------------------------------------------------------------------
 
-def execute_sql(filepath: Path, params=()) -> str:
+def execute_sql(filename: str, params=()) -> list[dict]:
     """
     Exécute le contenu d'un fichier .sql (dans sql/) avec les paramètres
     donnés, et retourne les résultats sous forme de liste de dicts.
@@ -18,7 +18,7 @@ def execute_sql(filepath: Path, params=()) -> str:
     Retourne :
         list[dict] : une entrée par ligne de résultat
     """
-    sql_file = SQL_DIR / filepath
+    sql_file = SQL_DIR / filename
     with open(sql_file, "r", encoding="utf-8") as file:
         sql_request = file.read()
 
