@@ -24,4 +24,4 @@ joblib
 pyyaml
 
 # --- LLM ---
-mistal
+mistalai
