@@ -11,10 +11,10 @@ ensuite via le scraping Wikipedia (voir extract_web.py).
 
 import os
 import json
-from config import API_KEY, BASE_TMDB_URL, TMDB_RAW
+from config import TMDB_API_KEY, BASE_TMDB_URL, TMDB_RAW
 from utils import safe_get
 
-assert API_KEY, "Missing key : check .env file"
+assert TMDB_API_KEY, "Missing key : check .env file"
 
 # --------------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ def get_headers():
     """
     return {
         "accept": "application/json",
-        "Authorization": f"Bearer {API_KEY}"
+        "Authorization": f"Bearer {TMDB_API_KEY}"
     }
 
 
