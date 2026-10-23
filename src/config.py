@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 # --------------------------------------------------------------------------------
 
 load_dotenv()
-API_KEY = os.getenv("TMDB_API_KEY")
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
 
 def find_project_root() -> Path:
@@ -84,3 +85,6 @@ ARTEFACT = PROJECT_ROOT / config["recommendation"]["artefact_path"]
 CSV_TO_DB = PROJECT_ROOT / config["path"]["export"]
 DB_ENTRY = config["pipeline"]["db_entry"]
 FORCE_REFRESH = config["pipeline"]["force_refresh"]
+
+# enhanced_recommendation.py
+MODEL = config["llm"]["model"]
