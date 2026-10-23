@@ -56,6 +56,12 @@ Recommandation **par similarité de contenu** (sans LLM) :
 
 **Limite connue :** la similarité est *lexicale* (elle compare les mots, pas le sens). Deux synopsis qui partagent un mot comme « princess » peuvent se rapprocher sans rapport réel. Le `score` renvoyé sert d'indicateur de confiance.
 
+## Flux du projet
+
+![Flux du projet CinéData](docs/flux.svg)
+
+Wikipedia et MovieLens enrichissent les films issus de TMDB, qui reste la source principale. Le résultat fusionné est chargé en SQLite, puis le précalcul TF-IDF produit `recommendation.joblib`. L'API lit la base pour `/movies` et le joblib pour `/recommendation`.
+
 ## Architecture
 
     config.yaml            # Configuration centrale (chemins, paramètres, API TMDB)

@@ -5,3 +5,4 @@ __pycache__/
 docs/lessons/
 data/db/*.db
 *.joblib
+*.svg
