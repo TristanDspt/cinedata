@@ -34,3 +34,12 @@ recommendation:
   sql_file: recommendation.sql
   top_n: 5
   artefact_path: data/models/recommendation.joblib
+
+llm:
+  provider: mistral
+  model: mistral-small-2603
+  temperature: 0.7
+  max_token: 400
+  max_try: 3
+  pause_init: 2.0
+  pause: 1
